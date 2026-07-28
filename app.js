@@ -15,7 +15,7 @@ const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
 
 // TEST MODE: 1 second = 1 minute
 // REAL MODE: change to 60000
-const GROW_INTERVAL = 1000;
+const GROW_INTERVAL = 60000;
 
 // Tree species based on session length
 const species = [
