@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Grow A Tree Focus</title>
+  <title>Focus Forest</title>
   <style>
     body {
       font-family: Arial;
       background: #e8f5e9;
       padding: 20px;
+      transition: background 1s ease;
     }
+
     #tree {
-      font-size: 40px;
+      font-size: 60px;
       text-align: center;
       margin: 20px 0;
     }
+
+    .tree-grow {
+      transition: transform 0.5s ease, opacity 0.5s ease;
+      transform: scale(1.2);
+      opacity: 0.8;
+    }
+
     #forest {
       margin-top: 20px;
       padding: 10px;
       background: #c8e6c9;
+      min-height: 60px;
     }
+
     .tree-icon {
       font-size: 30px;
       margin-right: 5px;
     }
+
     #crafting button {
       margin: 5px;
       padding: 10px;
@@ -30,7 +42,7 @@
 </head>
 <body>
 
-<h1>🌳 Focus Tree App</h1>
+<h1>🌳 Focus Forest</h1>
 
 <button id="startBtn">Start Focus Session</button>
 <p id="timer">Timer: 0 min</p>
@@ -39,11 +51,15 @@
 
 <h3>Resources</h3>
 <p>Wood: <span id="wood">0</span></p>
+<p>Essence: <span id="essence">0</span></p>
+<p>Growth Speed: <span id="growth">1.0x</span></p>
 
 <h3>Crafting</h3>
 <div id="crafting">
-  <button onclick="craftBench()">Craft Bench (10 wood)</button>
-  <button onclick="craftLantern()">Craft Lantern (20 wood)</button>
+  <button onclick="craftBench()">🪑 Bench (10 wood)</button>
+  <button onclick="craftLantern()">🏮 Lantern (20 wood)</button>
+  <button onclick="craftTreehouse()">🏡 Treehouse (50 wood, 5 essence)</button>
+  <button onclick="craftShrine()">⛩️ Shrine (100 wood, 10 essence)</button>
 </div>
 
 <h3>Your Forest</h3>
