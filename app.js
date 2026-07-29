@@ -47,16 +47,25 @@ document.getElementById("startBtn").onclick = () => {
   focusSecondsEl.textContent = "0";
   treeEl.textContent = stages[0];
 
+  // Seconds counter - updates every 1 second
+  const secondsInterval = setInterval(() => {
+    if (!growing) {
+      clearInterval(secondsInterval);
+      return;
+    }
+    focusSeconds += 1;
+    focusSecondsEl.textContent = focusSeconds;
+  }, 1000);
+
+  // Growth interval - updates every GROW_INTERVAL (1 minute)
   const interval = setInterval(() => {
     if (!growing) {
       clearInterval(interval);
       return;
     }
 
-    focusSeconds += 1;
     minutes += growthMultiplier;
     timerEl.textContent = `Timer: ${Math.floor(minutes)} min`;
-    focusSecondsEl.textContent = focusSeconds;
 
     const stageIndex = Math.min(stages.length - 1, Math.floor(minutes));
     treeEl.textContent = stages[stageIndex];
@@ -76,6 +85,7 @@ document.getElementById("startBtn").onclick = () => {
       updateBiome();
       saveForest();
       clearInterval(interval);
+      clearInterval(secondsInterval);
     }
 
   }, GROW_INTERVAL);
