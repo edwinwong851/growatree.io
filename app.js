@@ -6,6 +6,7 @@ let growthMultiplier = 1;
 let focusSeconds = 0;
 let growInterval = null;
 let secondsInterval = null;
+let lastEssenceCount = 0;
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
@@ -48,6 +49,16 @@ function getSecondsUntilNextEssence() {
   return Math.max(0, nextEssenceAt - totalSeconds);
 }
 
+function showEssenceNotification() {
+  const notification = document.createElement("div");
+  notification.className = "essence-notification";
+  notification.textContent = "✨ +1 Essence!";
+  document.body.appendChild(notification);
+  
+  // Remove after animation completes
+  setTimeout(() => notification.remove(), 2000);
+}
+
 document.getElementById("startBtn").onclick = () => {
   console.log("Start button clicked!");
   if (growing) return;
@@ -55,6 +66,7 @@ document.getElementById("startBtn").onclick = () => {
   growing = true;
   minutes = 0;
   focusSeconds = 0;
+  lastEssenceCount = essence;
 
   timerEl.textContent = "Timer: 0 min";
   focusSecondsEl.textContent = "0";
@@ -97,7 +109,10 @@ document.getElementById("startBtn").onclick = () => {
     woodEl.textContent = Math.floor(wood);
 
     // Essence given every 2 minutes
-    if (minutes >= 2 && minutes % 2 === 0) essence += 1;
+    if (minutes >= 2 && minutes % 2 === 0) {
+      essence += 1;
+      showEssenceNotification();
+    }
     essenceEl.textContent = essence;
     
     // Update countdown
