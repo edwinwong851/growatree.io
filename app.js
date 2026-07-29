@@ -6,7 +6,7 @@ let growthMultiplier = 1;
 let focusSeconds = 0;
 let growInterval = null;
 let secondsInterval = null;
-let lastEssenceCount = 0;
+let lastEssenceMinute = -1;
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
@@ -42,10 +42,8 @@ function animateTree() {
 }
 
 function getSecondsUntilNextEssence() {
-  // Essence is given at 2, 4, 6, 8... minutes
-  // Calculate how many seconds until the next 2-minute mark
   const totalSeconds = focusSeconds;
-  const nextEssenceAt = Math.ceil(totalSeconds / 120) * 120; // Next multiple of 120
+  const nextEssenceAt = Math.ceil(totalSeconds / 120) * 120;
   return Math.max(0, nextEssenceAt - totalSeconds);
 }
 
@@ -55,7 +53,8 @@ function showEssenceNotification() {
   notification.textContent = "✨ +1 Essence!";
   document.body.appendChild(notification);
   
-  // Remove after animation completes
+  console.log("Showing essence notification!");
+  
   setTimeout(() => notification.remove(), 2000);
 }
 
@@ -66,7 +65,7 @@ document.getElementById("startBtn").onclick = () => {
   growing = true;
   minutes = 0;
   focusSeconds = 0;
-  lastEssenceCount = essence;
+  lastEssenceMinute = -1;
 
   timerEl.textContent = "Timer: 0 min";
   focusSecondsEl.textContent = "0";
@@ -99,21 +98,24 @@ document.getElementById("startBtn").onclick = () => {
     }
 
     minutes += growthMultiplier;
-    timerEl.textContent = `Timer: ${Math.floor(minutes)} min`;
+    const floorMinutes = Math.floor(minutes);
+    timerEl.textContent = `Timer: ${floorMinutes} min`;
 
-    const stageIndex = Math.min(stages.length - 1, Math.floor(minutes));
+    const stageIndex = Math.min(stages.length - 1, floorMinutes);
     treeEl.textContent = stages[stageIndex];
     animateTree();
 
     wood += 2 * growthMultiplier;
     woodEl.textContent = Math.floor(wood);
 
-    // Essence given every 2 minutes
-    if (minutes >= 2 && minutes % 2 === 0) {
+    // Essence given every 2 minutes - check if we just hit a 2-minute mark
+    if (floorMinutes >= 2 && floorMinutes % 2 === 0 && floorMinutes !== lastEssenceMinute) {
+      lastEssenceMinute = floorMinutes;
       essence += 1;
+      essenceEl.textContent = essence;
+      console.log("ESSENCE EARNED! Total:", essence, "At minute:", floorMinutes);
       showEssenceNotification();
     }
-    essenceEl.textContent = essence;
     
     // Update countdown
     const secondsUntil = getSecondsUntilNextEssence();
