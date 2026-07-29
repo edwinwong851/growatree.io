@@ -132,6 +132,10 @@ function addTreeToForest(stageIndex, species) {
   tree.className = "tree-icon";
   tree.textContent = species.emoji;
   forestEl.appendChild(tree);
+  
+  // Give 3 wood for planting a tree
+  wood += 3;
+  woodEl.textContent = Math.floor(wood);
 }
 
 function updateBiome() {
