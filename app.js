@@ -41,16 +41,11 @@ function animateTree() {
 }
 
 function getSecondsUntilNextEssence() {
-  const minutesMod = Math.floor(minutes) % 2;
-  const secondsInCurrentMinute = focusSeconds % 60;
-  
-  if (minutesMod === 0) {
-    // Just received essence, next one in 120 seconds (2 minutes)
-    return 120 - secondsInCurrentMinute;
-  } else {
-    // Halfway through, next one in 60 seconds
-    return 60 - secondsInCurrentMinute;
-  }
+  // Essence is given at 2, 4, 6, 8... minutes
+  // Calculate how many seconds until the next 2-minute mark
+  const totalSeconds = focusSeconds;
+  const nextEssenceAt = Math.ceil(totalSeconds / 120) * 120; // Next multiple of 120
+  return Math.max(0, nextEssenceAt - totalSeconds);
 }
 
 document.getElementById("startBtn").onclick = () => {
@@ -79,9 +74,9 @@ document.getElementById("startBtn").onclick = () => {
     
     // Update essence countdown
     const secondsUntil = getSecondsUntilNextEssence();
-    essenceCountdownEl.textContent = Math.max(0, secondsUntil);
+    essenceCountdownEl.textContent = secondsUntil;
     
-    console.log("Seconds:", focusSeconds);
+    console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
   }, 1000);
 
   // Growth interval - updates every GROW_INTERVAL (1 minute)
@@ -105,9 +100,9 @@ document.getElementById("startBtn").onclick = () => {
     if (minutes >= 2 && minutes % 2 === 0) essence += 1;
     essenceEl.textContent = essence;
     
-    // Reset countdown when essence is earned
+    // Update countdown
     const secondsUntil = getSecondsUntilNextEssence();
-    essenceCountdownEl.textContent = Math.max(0, secondsUntil);
+    essenceCountdownEl.textContent = secondsUntil;
 
     if (minutes >= 5) {
       growing = false;
