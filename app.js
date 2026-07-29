@@ -7,13 +7,25 @@ let focusSeconds = 0;
 let growInterval = null;
 let secondsInterval = null;
 
-const timerEl = document.getElementById("timer");
-const treeEl = document.getElementById("tree");
-const woodEl = document.getElementById("wood");
-const essenceEl = document.getElementById("essence");
-const forestEl = document.getElementById("forest");
-const growthEl = document.getElementById("growth");
-const focusSecondsEl = document.getElementById("focusSecondsValue");
+// Wait for DOM to load before accessing elements
+function initializeElements() {
+  window.timerEl = document.getElementById("timer");
+  window.treeEl = document.getElementById("tree");
+  window.woodEl = document.getElementById("wood");
+  window.essenceEl = document.getElementById("essence");
+  window.forestEl = document.getElementById("forest");
+  window.growthEl = document.getElementById("growth");
+  window.focusSecondsEl = document.getElementById("focusSecondsValue");
+  
+  console.log("Elements initialized:", window.focusSecondsEl);
+}
+
+// Initialize when DOM is ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeElements);
+} else {
+  initializeElements();
+}
 
 const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
 
@@ -34,64 +46,69 @@ function getTreeSpecies(minutes) {
 }
 
 function animateTree() {
-  treeEl.classList.add("tree-grow");
-  setTimeout(() => treeEl.classList.remove("tree-grow"), 500);
+  window.treeEl.classList.add("tree-grow");
+  setTimeout(() => window.treeEl.classList.remove("tree-grow"), 500);
 }
 
-document.getElementById("startBtn").onclick = () => {
-  if (growing) return;
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("startBtn").onclick = () => {
+    if (growing) return;
 
-  growing = true;
-  minutes = 0;
-  focusSeconds = 0;
+    growing = true;
+    minutes = 0;
+    focusSeconds = 0;
 
-  timerEl.textContent = "Timer: 0 min";
-  focusSecondsEl.textContent = "0";
-  treeEl.textContent = stages[0];
+    window.timerEl.textContent = "Timer: 0 min";
+    window.focusSecondsEl.textContent = "0";
+    window.treeEl.textContent = stages[0];
 
-  // Seconds counter - updates every 1 second
-  secondsInterval = setInterval(() => {
-    if (!growing) {
-      clearInterval(secondsInterval);
-      return;
-    }
-    focusSeconds += 1;
-    focusSecondsEl.textContent = focusSeconds;
-  }, 1000);
+    console.log("Session started, focusSecondsEl:", window.focusSecondsEl);
 
-  // Growth interval - updates every GROW_INTERVAL (1 minute)
-  growInterval = setInterval(() => {
-    if (!growing) {
-      clearInterval(growInterval);
-      return;
-    }
+    // Seconds counter - updates every 1 second
+    secondsInterval = setInterval(() => {
+      if (!growing) {
+        clearInterval(secondsInterval);
+        return;
+      }
+      focusSeconds += 1;
+      window.focusSecondsEl.textContent = focusSeconds;
+      console.log("Seconds updated:", focusSeconds);
+    }, 1000);
 
-    minutes += growthMultiplier;
-    timerEl.textContent = `Timer: ${Math.floor(minutes)} min`;
+    // Growth interval - updates every GROW_INTERVAL (1 minute)
+    growInterval = setInterval(() => {
+      if (!growing) {
+        clearInterval(growInterval);
+        return;
+      }
 
-    const stageIndex = Math.min(stages.length - 1, Math.floor(minutes));
-    treeEl.textContent = stages[stageIndex];
-    animateTree();
+      minutes += growthMultiplier;
+      window.timerEl.textContent = `Timer: ${Math.floor(minutes)} min`;
 
-    wood += 2 * growthMultiplier;
-    woodEl.textContent = Math.floor(wood);
+      const stageIndex = Math.min(stages.length - 1, Math.floor(minutes));
+      window.treeEl.textContent = stages[stageIndex];
+      animateTree();
 
-    if (minutes >= 20) essence += 1;
-    if (minutes >= 45) essence += 3;
-    essenceEl.textContent = essence;
+      wood += 2 * growthMultiplier;
+      window.woodEl.textContent = Math.floor(wood);
 
-    if (minutes >= 5) {
-      growing = false;
-      const sp = getTreeSpecies(minutes);
-      addTreeToForest(stageIndex, sp);
-      updateBiome();
-      saveForest();
-      clearInterval(growInterval);
-      clearInterval(secondsInterval);
-    }
+      if (minutes >= 20) essence += 1;
+      if (minutes >= 45) essence += 3;
+      window.essenceEl.textContent = essence;
 
-  }, GROW_INTERVAL);
-};
+      if (minutes >= 5) {
+        growing = false;
+        const sp = getTreeSpecies(minutes);
+        addTreeToForest(stageIndex, sp);
+        updateBiome();
+        saveForest();
+        clearInterval(growInterval);
+        clearInterval(secondsInterval);
+      }
+
+    }, GROW_INTERVAL);
+  };
+});
 
 // Focus lock
 document.addEventListener("visibilitychange", () => {
@@ -107,11 +124,11 @@ function addTreeToForest(stageIndex, species) {
   const tree = document.createElement("span");
   tree.className = "tree-icon";
   tree.textContent = species.emoji;
-  forestEl.appendChild(tree);
+  window.forestEl.appendChild(tree);
 }
 
 function updateBiome() {
-  const count = forestEl.querySelectorAll(".tree-icon").length;
+  const count = window.forestEl.querySelectorAll(".tree-icon").length;
 
   if (count >= 50) document.body.style.background = "#e0f7fa"; // Mystic Grove
   else if (count >= 25) document.body.style.background = "#fff8e1"; // Riverbank
@@ -119,37 +136,39 @@ function updateBiome() {
 }
 
 function saveForest() {
-  localStorage.setItem("forest", forestEl.innerHTML);
+  localStorage.setItem("forest", window.forestEl.innerHTML);
   localStorage.setItem("wood", wood);
   localStorage.setItem("essence", essence);
   localStorage.setItem("growthMultiplier", growthMultiplier);
 }
 
 function loadForest() {
-  forestEl.innerHTML = localStorage.getItem("forest") || "";
+  window.forestEl.innerHTML = localStorage.getItem("forest") || "";
   wood = Number(localStorage.getItem("wood")) || 0;
   essence = Number(localStorage.getItem("essence")) || 0;
   growthMultiplier = Number(localStorage.getItem("growthMultiplier")) || 1;
 
-  woodEl.textContent = wood;
-  essenceEl.textContent = essence;
-  growthEl.textContent = growthMultiplier.toFixed(1) + "x";
+  window.woodEl.textContent = wood;
+  window.essenceEl.textContent = essence;
+  window.growthEl.textContent = growthMultiplier.toFixed(1) + "x";
 }
 
-loadForest();
+document.addEventListener("DOMContentLoaded", () => {
+  loadForest();
+});
 
 // Crafting upgrades growth speed
 function increaseGrowth(amount) {
   growthMultiplier += amount;
-  growthEl.textContent = growthMultiplier.toFixed(1) + "x";
+  window.growthEl.textContent = growthMultiplier.toFixed(1) + "x";
   saveForest();
 }
 
 function craftBench() {
   if (wood >= 10) {
     wood -= 10;
-    woodEl.textContent = wood;
-    forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x</p>";
+    window.woodEl.textContent = wood;
+    window.forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x</p>";
     increaseGrowth(0.1);
   }
 }
@@ -157,8 +176,8 @@ function craftBench() {
 function craftLantern() {
   if (wood >= 20) {
     wood -= 20;
-    woodEl.textContent = wood;
-    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.2x</p>";
+    window.woodEl.textContent = wood;
+    window.forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.2x</p>";
     increaseGrowth(0.2);
   }
 }
@@ -167,9 +186,9 @@ function craftTreehouse() {
   if (wood >= 50 && essence >= 5) {
     wood -= 50;
     essence -= 5;
-    woodEl.textContent = wood;
-    essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.5x</p>";
+    window.woodEl.textContent = wood;
+    window.essenceEl.textContent = essence;
+    window.forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.5x</p>";
     increaseGrowth(0.5);
   }
 }
@@ -178,9 +197,9 @@ function craftShrine() {
   if (wood >= 100 && essence >= 10) {
     wood -= 100;
     essence -= 10;
-    woodEl.textContent = wood;
-    essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +1.0x</p>";
+    window.woodEl.textContent = wood;
+    window.essenceEl.textContent = essence;
+    window.forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +1.0x</p>";
     increaseGrowth(1.0);
   }
 }
