@@ -26,11 +26,12 @@ const GROW_INTERVAL = 60000;
 
 // Tree species based on session length
 const species = [
-  { name: "Birch", emoji: "🌱", min: 0 },
-  { name: "Oak", emoji: "🌿", min: 10 },
-  { name: "Redwood", emoji: "🌳", min: 25 },
-  { name: "Crystal Tree", emoji: "💠", min: 45 }
-];
+  { name: "Seed", emoji: "🌱", min: 0 },
+  { name: "Leaflet", emoji: "🌿", min: 10 },
+  { name: "Redwood", emoji: "🌳", min: 20 },
+  { name: "Crystal Tree", emoji: "💠", min: 30 }
+  { name: "Wood Tree" , emoji : "💠🌳🌿🌱", min: 45}
+]
 
 function getTreeSpecies(minutes) {
   return species.filter(s => minutes >= s.min).pop();
