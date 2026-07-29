@@ -4,6 +4,8 @@ let essence = 0;
 let growing = false;
 let growthMultiplier = 1;
 let focusSeconds = 0;
+let growInterval = null;
+let secondsInterval = null;
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
@@ -48,7 +50,7 @@ document.getElementById("startBtn").onclick = () => {
   treeEl.textContent = stages[0];
 
   // Seconds counter - updates every 1 second
-  const secondsInterval = setInterval(() => {
+  secondsInterval = setInterval(() => {
     if (!growing) {
       clearInterval(secondsInterval);
       return;
@@ -58,9 +60,9 @@ document.getElementById("startBtn").onclick = () => {
   }, 1000);
 
   // Growth interval - updates every GROW_INTERVAL (1 minute)
-  const interval = setInterval(() => {
+  growInterval = setInterval(() => {
     if (!growing) {
-      clearInterval(interval);
+      clearInterval(growInterval);
       return;
     }
 
@@ -84,7 +86,7 @@ document.getElementById("startBtn").onclick = () => {
       addTreeToForest(stageIndex, sp);
       updateBiome();
       saveForest();
-      clearInterval(interval);
+      clearInterval(growInterval);
       clearInterval(secondsInterval);
     }
 
@@ -96,6 +98,8 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden && growing) {
     growing = false;
     alert("Focus lost — tree stopped growing.");
+    clearInterval(growInterval);
+    clearInterval(secondsInterval);
   }
 });
 
