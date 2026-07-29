@@ -3,6 +3,7 @@ let wood = 0;
 let essence = 0;
 let growing = false;
 let growthMultiplier = 1;
+let focusSeconds = 0;
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
@@ -10,6 +11,7 @@ const woodEl = document.getElementById("wood");
 const essenceEl = document.getElementById("essence");
 const forestEl = document.getElementById("forest");
 const growthEl = document.getElementById("growth");
+const focusSecondsEl = document.getElementById("focusSecondsValue");
 
 const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
 
@@ -39,8 +41,10 @@ document.getElementById("startBtn").onclick = () => {
 
   growing = true;
   minutes = 0;
+  focusSeconds = 0;
 
   timerEl.textContent = "Timer: 0 min";
+  focusSecondsEl.textContent = "0";
   treeEl.textContent = stages[0];
 
   const interval = setInterval(() => {
@@ -49,8 +53,10 @@ document.getElementById("startBtn").onclick = () => {
       return;
     }
 
+    focusSeconds += 1;
     minutes += growthMultiplier;
     timerEl.textContent = `Timer: ${Math.floor(minutes)} min`;
+    focusSecondsEl.textContent = focusSeconds;
 
     const stageIndex = Math.min(stages.length - 1, Math.floor(minutes));
     treeEl.textContent = stages[stageIndex];
