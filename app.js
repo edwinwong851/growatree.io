@@ -14,6 +14,7 @@ const essenceEl = document.getElementById("essence");
 const forestEl = document.getElementById("forest");
 const growthEl = document.getElementById("growth");
 const focusSecondsEl = document.getElementById("focusSecondsValue");
+const essenceCountdownEl = document.getElementById("essenceCountdownValue");
 
 console.log("App.js loaded! focusSecondsEl:", focusSecondsEl);
 
@@ -39,6 +40,19 @@ function animateTree() {
   setTimeout(() => treeEl.classList.remove("tree-grow"), 500);
 }
 
+function getSecondsUntilNextEssence() {
+  const minutesMod = Math.floor(minutes) % 2;
+  const secondsInCurrentMinute = focusSeconds % 60;
+  
+  if (minutesMod === 0) {
+    // Just received essence, next one in 120 seconds (2 minutes)
+    return 120 - secondsInCurrentMinute;
+  } else {
+    // Halfway through, next one in 60 seconds
+    return 60 - secondsInCurrentMinute;
+  }
+}
+
 document.getElementById("startBtn").onclick = () => {
   console.log("Start button clicked!");
   if (growing) return;
@@ -49,6 +63,7 @@ document.getElementById("startBtn").onclick = () => {
 
   timerEl.textContent = "Timer: 0 min";
   focusSecondsEl.textContent = "0";
+  essenceCountdownEl.textContent = "120";
   treeEl.textContent = stages[0];
 
   console.log("Session started!");
@@ -61,6 +76,11 @@ document.getElementById("startBtn").onclick = () => {
     }
     focusSeconds += 1;
     focusSecondsEl.textContent = focusSeconds;
+    
+    // Update essence countdown
+    const secondsUntil = getSecondsUntilNextEssence();
+    essenceCountdownEl.textContent = Math.max(0, secondsUntil);
+    
     console.log("Seconds:", focusSeconds);
   }, 1000);
 
@@ -84,6 +104,10 @@ document.getElementById("startBtn").onclick = () => {
     // Essence given every 2 minutes
     if (minutes >= 2 && minutes % 2 === 0) essence += 1;
     essenceEl.textContent = essence;
+    
+    // Reset countdown when essence is earned
+    const secondsUntil = getSecondsUntilNextEssence();
+    essenceCountdownEl.textContent = Math.max(0, secondsUntil);
 
     if (minutes >= 5) {
       growing = false;
