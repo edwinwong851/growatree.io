@@ -231,8 +231,8 @@ increaseGrowth(0.5);
 }
 
 function craftShrine() {
-if (wood >= 100 && essence >= 10) {
-wood -= 100;
+if (wood >= 80 && essence >= 10) {
+wood -= 80;
 essence -= 10;
 woodEl.textContent = wood;
 essenceEl.textContent = essence;
