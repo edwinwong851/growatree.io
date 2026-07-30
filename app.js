@@ -51,12 +51,12 @@ function getSecondsUntilNextEssence() {
 function showEssenceNotification() {
   const notification = document.createElement("div");
   notification.className = "essence-notification";
-  notification.textContent = "✨ +1 Essence!";
+  notification.textContent = "✨ +1 Essence Yay!";
   document.body.appendChild(notification);
   
   console.log("Showing essence notification!");
   
-  setTimeout(() => notification.remove(), 2000);
+  setTimeout(() => notification.remove(), 5000);
 }
 
 document.getElementById("startBtn").onclick = () => {
