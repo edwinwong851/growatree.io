@@ -353,7 +353,26 @@ function loadForest() {
   updateTeacherPanel();
 }
 
-loadForest();
+// Ensure initialization runs after DOM is ready so the injected panel appears
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      loadForest();
+      createTeacherPanel();
+      updateTeacherPanel();
+    } catch (e) {
+      console.warn('Initialization after DOMContentLoaded failed', e);
+    }
+  });
+} else {
+  try {
+    loadForest();
+    createTeacherPanel();
+    updateTeacherPanel();
+  } catch (e) {
+    console.warn('Initialization failed', e);
+  }
+}
 
 // Crafting upgrades growth speed
 function increaseGrowth(amount) {
