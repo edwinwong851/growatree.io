@@ -55,9 +55,128 @@ function showEssenceNotification() {
   document.body.appendChild(notification);
   
   console.log("Essence notification shown!");
-  
+  appendTeacherLog && appendTeacherLog("Essence +1 earned");
+
   setTimeout(() => notification.remove(), 5000);
 }
+
+/* ---------- Teacher panel injection (on-student-screen) ---------- */
+/* Small collapsible overlay that shows session metrics and events.
+   Injected so no HTML edit is required. */
+function createTeacherPanel() {
+  if (document.getElementById('teacher-panel')) return; // already created
+
+  const css = `
+  #teacher-panel { position: fixed; top: 12px; right: 12px; width: 320px; z-index: 9999; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
+  #teacher-panel .tab { position: absolute; left: -72px; top: 0; transform: rotate(-90deg); transform-origin: left top; background:#2b7a78; color:#fff; padding:8px 12px; border-radius:6px 6px 0 0; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  #teacher-panel .card { background: rgba(255,255,255,0.98); border-radius:10px; padding:12px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); }
+  #teacher-panel .row { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
+  #teacher-panel .label { color:#666; font-size:12px; width:110px; }
+  #teacher-panel .value { font-weight:700; font-size:16px; }
+  #teacher-panel .big-emoji { font-size:36px; }
+  #teacher-panel .log { max-height:160px; overflow:auto; background:#f7f7f7; padding:8px; border-radius:6px; font-size:13px; color:#222; }
+  #teacher-panel .muted { color:#888; font-size:12px; }
+  #teacher-panel .controls { display:flex; gap:8px; justify-content:flex-end; }
+  #teacher-panel.collapsed { width:48px; }
+  #teacher-panel .collapse-btn { background:#ddd; border-radius:6px; padding:4px 8px; cursor:pointer; font-size:12px; }
+  `;
+
+  const style = document.createElement('style');
+  style.id = 'teacher-panel-styles';
+  style.appendChild(document.createTextNode(css));
+  document.head.appendChild(style);
+
+  const panel = document.createElement('div');
+  panel.id = 'teacher-panel';
+  panel.className = 'card';
+  panel.innerHTML = `
+    <div class="tab" id="teacherTab">Teacher</div>
+    <div class="card-inner card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong>Teacher panel</strong>
+        <div class="controls">
+          <div id="collapseBtn" class="collapse-btn">Collapse</div>
+        </div>
+      </div>
+      <div class="row"><div class="label">Session</div><div id="tp-session" class="value">Idle</div></div>
+      <div class="row"><div class="label">Timer (min)</div><div id="tp-timer" class="value">0</div></div>
+      <div class="row"><div class="label">Focus seconds</div><div id="tp-focus" class="value">0</div></div>
+      <div class="row"><div class="label">Essence countdown (s)</div><div id="tp-countdown" class="value">—</div></div>
+      <div class="row"><div class="label">Tree</div><div id="tp-tree" class="big-emoji">🌱</div></div>
+      <div class="row"><div class="label">Wood</div><div id="tp-wood" class="value">0</div></div>
+      <div class="row"><div class="label">Essence</div><div id="tp-essence" class="value">0</div></div>
+      <div class="row"><div class="label">Growth</div><div id="tp-growth" class="value">1.0x</div></div>
+      <div style="margin-top:8px">
+        <div class="label muted">Recent events</div>
+        <div id="tp-log" class="log"></div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(panel);
+
+  // hookup events
+  const tab = document.getElementById('teacherTab');
+  const collapseBtn = document.getElementById('collapseBtn');
+  let collapsed = false;
+  tab.addEventListener('click', () => {
+    collapsed = !collapsed;
+    if (collapsed) {
+      panel.classList.add('collapsed');
+      panel.querySelector('.card-inner').style.display = 'none';
+      tab.textContent = 'Teacher';
+    } else {
+      panel.classList.remove('collapsed');
+      panel.querySelector('.card-inner').style.display = '';
+      tab.textContent = 'Teacher';
+    }
+  });
+  collapseBtn.addEventListener('click', () => {
+    collapsed = true;
+    panel.classList.add('collapsed');
+    panel.querySelector('.card-inner').style.display = 'none';
+  });
+
+  // helper log append function exposed globally for brevity
+  window.appendTeacherLog = function(msg) {
+    try {
+      const container = document.getElementById('tp-log');
+      if (!container) return;
+      const el = document.createElement('div');
+      const at = new Date().toLocaleTimeString();
+      el.textContent = `[${at}] ${msg}`;
+      container.prepend(el);
+      while (container.childNodes.length > 200) container.removeChild(container.lastChild);
+    } catch (e) {
+      console.warn('appendTeacherLog failed', e);
+    }
+  };
+
+  // initial seed
+  appendTeacherLog('Teacher panel initialized');
+}
+
+function updateTeacherPanel() {
+  const s = (growing ? 'Growing' : 'Idle');
+  const tpSession = document.getElementById('tp-session');
+  const tpTimer = document.getElementById('tp-timer');
+  const tpFocus = document.getElementById('tp-focus');
+  const tpCountdown = document.getElementById('tp-countdown');
+  const tpTree = document.getElementById('tp-tree');
+  const tpWood = document.getElementById('tp-wood');
+  const tpEssence = document.getElementById('tp-essence');
+  const tpGrowth = document.getElementById('tp-growth');
+
+  if (tpSession) tpSession.textContent = s + (lostFocus ? ' (lost focus)' : '');
+  if (tpTimer) tpTimer.textContent = Math.floor(minutes);
+  if (tpFocus) tpFocus.textContent = focusSeconds;
+  if (tpCountdown) tpCountdown.textContent = getSecondsUntilNextEssence();
+  if (tpTree) tpTree.textContent = treeEl ? treeEl.textContent : stages[0];
+  if (tpWood) tpWood.textContent = Math.floor(wood);
+  if (tpEssence) tpEssence.textContent = essence;
+  if (tpGrowth) tpGrowth.textContent = growthMultiplier.toFixed(1) + 'x';
+}
+
+/* ---------- End teacher panel code ---------- */
 
 function startSession() {
   if (growInterval) {
@@ -70,6 +189,7 @@ function startSession() {
   }
 
   console.log("Starting session...");
+  appendTeacherLog && appendTeacherLog("Session started");
   growing = true;
   minutes = 0;
   focusSeconds = 0;
@@ -79,6 +199,8 @@ function startSession() {
   focusSecondsEl.textContent = "0";
   essenceCountdownEl.textContent = "120";
   treeEl.textContent = stages[0];
+
+  updateTeacherPanel();
 
   // Seconds counter - updates every 1 second
   secondsInterval = setInterval(() => {
@@ -96,6 +218,7 @@ function startSession() {
       woodEl.textContent = Math.floor(wood);
       saveForest();
       console.log("Wood earned at", focusSeconds, "seconds! Total:", Math.floor(wood));
+      appendTeacherLog && appendTeacherLog(`Wood earned (+${Math.round(1 * growthMultiplier)}) at ${focusSeconds}s`);
     }
     
     // Update essence countdown
@@ -103,6 +226,9 @@ function startSession() {
     essenceCountdownEl.textContent = secondsUntil;
     
     console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
+
+    // update teacher panel
+    updateTeacherPanel();
   }, 1000);
 
   // Growth interval - updates every GROW_INTERVAL (1 minute)
@@ -128,12 +254,16 @@ function startSession() {
       essence += 1;
       essenceEl.textContent = essence;
       console.log("ESSENCE EARNED! Total:", essence, "At minute:", floorMinutes);
+      appendTeacherLog && appendTeacherLog(`Essence +1 at minute ${floorMinutes}`);
       showEssenceNotification();
     }
     
     // Update countdown
     const secondsUntil = getSecondsUntilNextEssence();
     essenceCountdownEl.textContent = secondsUntil;
+
+    // update teacher panel
+    updateTeacherPanel();
 
     if (minutes >= 5) {
       growing = false;
@@ -145,6 +275,8 @@ function startSession() {
       growInterval = null;
       clearInterval(secondsInterval);
       secondsInterval = null;
+      appendTeacherLog && appendTeacherLog('Session finished and tree planted');
+      updateTeacherPanel();
     }
 
   }, GROW_INTERVAL);
@@ -162,12 +294,15 @@ document.addEventListener("visibilitychange", () => {
     // stop the session and mark it as lost due to focus
     growing = false;
     lostFocus = true;
+    appendTeacherLog && appendTeacherLog('Focus lost — session stopped');
     alert("Focus lost — tree stopped growing.");
     if (growInterval) { clearInterval(growInterval); growInterval = null; }
     if (secondsInterval) { clearInterval(secondsInterval); secondsInterval = null; }
+    updateTeacherPanel();
   } else if (!document.hidden && lostFocus) {
     // user regained focus after losing it: restart the session automatically
     lostFocus = false;
+    appendTeacherLog && appendTeacherLog('Focus regained — restarting session');
     console.log("Focus regained — restarting session.");
     startSession();
   }
@@ -182,6 +317,9 @@ function addTreeToForest(stageIndex, species) {
   // Give 3 wood for planting a tree
   wood += 3;
   woodEl.textContent = Math.floor(wood);
+
+  appendTeacherLog && appendTeacherLog(`Planted ${species.name} ${species.emoji} (+3 wood)`);
+  updateTeacherPanel();
 }
 
 function updateBiome() {
@@ -197,6 +335,7 @@ function saveForest() {
   localStorage.setItem("wood", wood);
   localStorage.setItem("essence", essence);
   localStorage.setItem("growthMultiplier", growthMultiplier);
+  appendTeacherLog && appendTeacherLog('Saved forest to localStorage');
 }
 
 function loadForest() {
@@ -208,6 +347,10 @@ function loadForest() {
   woodEl.textContent = wood;
   essenceEl.textContent = essence;
   growthEl.textContent = growthMultiplier.toFixed(1) + "x";
+
+  // create teacher panel (if not present) and seed its values
+  createTeacherPanel();
+  updateTeacherPanel();
 }
 
 loadForest();
@@ -217,6 +360,8 @@ function increaseGrowth(amount) {
   growthMultiplier += amount;
   growthEl.textContent = growthMultiplier.toFixed(1) + "x";
   saveForest();
+  appendTeacherLog && appendTeacherLog(`Growth increased by ${amount}`);
+  updateTeacherPanel();
 }
 
 function craftBench() {
