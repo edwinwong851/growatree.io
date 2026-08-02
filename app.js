@@ -22,8 +22,8 @@ console.log("App.js loaded!");
 
 const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
 
-// GROW_INTERVAL: 30000 = 30 seconds
-const GROW_INTERVAL = 30000;
+// GROW_INTERVAL: 60000 = 60 seconds
+const GROW_INTERVAL = 600000;
 
 // Tree species based on session length
 const species = [
