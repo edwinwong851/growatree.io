@@ -7,7 +7,7 @@ let focusSeconds = 0;
 let growInterval = null;
 let secondsInterval = null;
 let lastEssenceMinute = -1;
-let lostFocus = false; // NEW: track if session stopped due to focus loss
+let lostFocus = false;
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
@@ -22,8 +22,8 @@ console.log("App.js loaded!");
 
 const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
 
-// GROW_INTERVAL: 60000 = 1 minute
-const GROW_INTERVAL = 60000;
+// GROW_INTERVAL: 5000 = 5 seconds (for testing)
+const GROW_INTERVAL = 5000;
 
 // Tree species based on session length
 const species = [
@@ -59,9 +59,7 @@ function showEssenceNotification() {
   setTimeout(() => notification.remove(), 2000);
 }
 
-// Extracted start logic so we can call it from the button and from visibilitychange
 function startSession() {
-  // clear any previous intervals to avoid duplicates
   if (growInterval) {
     clearInterval(growInterval);
     growInterval = null;
@@ -92,6 +90,13 @@ function startSession() {
     focusSeconds += 1;
     focusSecondsEl.textContent = focusSeconds;
     
+    // Give wood every 30 seconds
+    if (focusSeconds % 30 === 0) {
+      wood += 1 * growthMultiplier;
+      woodEl.textContent = Math.floor(wood);
+      console.log("Wood earned! Total:", Math.floor(wood));
+    }
+    
     // Update essence countdown
     const secondsUntil = getSecondsUntilNextEssence();
     essenceCountdownEl.textContent = secondsUntil;
@@ -99,7 +104,7 @@ function startSession() {
     console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
   }, 1000);
 
-  // Growth interval - updates every GROW_INTERVAL (1 minute)
+  // Growth interval - updates every GROW_INTERVAL (5 seconds for testing)
   growInterval = setInterval(() => {
     if (!growing) {
       clearInterval(growInterval);
@@ -114,9 +119,6 @@ function startSession() {
     const stageIndex = Math.min(stages.length - 1, floorMinutes);
     treeEl.textContent = stages[stageIndex];
     animateTree();
-
-    wood += 2 * growthMultiplier;
-    woodEl.textContent = Math.floor(wood);
 
     // Essence given every 2 minutes - check if we just hit a 2-minute mark
     if (floorMinutes >= 2 && floorMinutes % 2 === 0 && floorMinutes !== lastEssenceMinute) {
@@ -155,14 +157,12 @@ document.getElementById("startBtn").onclick = () => {
 // Focus lock: stop on blur; restart automatically when visible again
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && growing) {
-    // stop the session and mark it as lost due to focus
     growing = false;
     lostFocus = true;
     alert("Focus lost — tree stopped growing.");
     if (growInterval) { clearInterval(growInterval); growInterval = null; }
     if (secondsInterval) { clearInterval(secondsInterval); secondsInterval = null; }
   } else if (!document.hidden && lostFocus) {
-    // user regained focus after losing it: restart the session automatically
     lostFocus = false;
     console.log("Focus regained — restarting session.");
     startSession();
