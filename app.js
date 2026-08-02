@@ -22,15 +22,15 @@ console.log("App.js loaded!");
 
 const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
 
-// GROW_INTERVAL: 60000 = 1 minute
-const GROW_INTERVAL = 60000;
+// GROW_INTERVAL: 30000 = 30 seconds
+const GROW_INTERVAL = 30000;
 
 // Tree species based on session length
 const species = [
   { name: "Birch", emoji: "🌱", min: 0 },
   { name: "Oak", emoji: "🌿", min: 10 },
-  { name: "Redwood", emoji: "🌳", min: 25 },
-  { name: "Crystal Tree", emoji: "💠", min: 45 }
+  { name: "Redwood", emoji: "🌳", min: 20 },
+  { name: "Crystal Tree", emoji: "💠", min: 30 }
 ];
 
 function getTreeSpecies(minutes) {
@@ -51,12 +51,12 @@ function getSecondsUntilNextEssence() {
 function showEssenceNotification() {
   const notification = document.createElement("div");
   notification.className = "essence-notification";
-  notification.textContent = "✨ +1 Essence!";
+  notification.textContent = "✨ +1 Essence! Yay";
   document.body.appendChild(notification);
   
   console.log("Essence notification shown!");
   
-  setTimeout(() => notification.remove(), 2000);
+  setTimeout(() => notification.remove(), 5000);
 }
 
 function startSession() {
