@@ -175,8 +175,8 @@ function addTreeToForest(stageIndex, species) {
   tree.textContent = species.emoji;
   forestEl.appendChild(tree);
   
-  // Give 3 wood for planting a tree
-  wood += 3;
+  // Give 4 wood for planting a tree
+  wood += 4;
   woodEl.textContent = Math.floor(wood);
 }
 
@@ -239,8 +239,8 @@ function craftTreehouse() {
     essence -= 5;
     woodEl.textContent = wood;
     essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.5x</p>";
-    increaseGrowth(0.5);
+    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.75x</p>";
+    increaseGrowth(0.75);
   }
 }
 
