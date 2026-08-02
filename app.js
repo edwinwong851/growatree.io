@@ -22,8 +22,8 @@ console.log("App.js loaded!");
 
 const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
 
-// GROW_INTERVAL: 5000 = 5 seconds (for testing)
-const GROW_INTERVAL = 5000;
+// GROW_INTERVAL: 60000 = 1 minute (real time)
+const GROW_INTERVAL = 60000;
 
 // Tree species based on session length
 const species = [
@@ -90,13 +90,6 @@ function startSession() {
     focusSeconds += 1;
     focusSecondsEl.textContent = focusSeconds;
     
-    // Give wood every 30 seconds
-    if (focusSeconds % 30 === 0) {
-      wood += 1 * growthMultiplier;
-      woodEl.textContent = Math.floor(wood);
-      console.log("Wood earned! Total:", Math.floor(wood));
-    }
-    
     // Update essence countdown
     const secondsUntil = getSecondsUntilNextEssence();
     essenceCountdownEl.textContent = secondsUntil;
@@ -104,7 +97,7 @@ function startSession() {
     console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
   }, 1000);
 
-  // Growth interval - updates every GROW_INTERVAL (5 seconds for testing)
+  // Growth interval - updates every GROW_INTERVAL (1 minute)
   growInterval = setInterval(() => {
     if (!growing) {
       clearInterval(growInterval);
@@ -112,7 +105,8 @@ function startSession() {
       return;
     }
 
-    minutes += growthMultiplier;
+    // Advance real time by 1 minute per interval. growthMultiplier only affects rewards.
+    minutes += 1;
     const floorMinutes = Math.floor(minutes);
     timerEl.textContent = `Timer: ${floorMinutes} min`;
 
@@ -120,10 +114,14 @@ function startSession() {
     treeEl.textContent = stages[stageIndex];
     animateTree();
 
+    // Wood scales with growthMultiplier, but time does not
+    wood += 2 * growthMultiplier;
+    woodEl.textContent = Math.floor(wood);
+
     // Essence given every 2 minutes - check if we just hit a 2-minute mark
     if (floorMinutes >= 2 && floorMinutes % 2 === 0 && floorMinutes !== lastEssenceMinute) {
       lastEssenceMinute = floorMinutes;
-      essence += 1;
+      essence += 1 * growthMultiplier; // essence also scales with multiplier
       essenceEl.textContent = essence;
       console.log("ESSENCE EARNED! Total:", essence, "At minute:", floorMinutes);
       showEssenceNotification();
@@ -175,7 +173,7 @@ function addTreeToForest(stageIndex, species) {
   tree.textContent = species.emoji;
   forestEl.appendChild(tree);
   
-  // Give 4 wood for planting a tree
+  // Give 4 wood for planting a tree (kept from previous change)
   wood += 4;
   woodEl.textContent = Math.floor(wood);
 }
