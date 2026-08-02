@@ -92,8 +92,9 @@ function startSession() {
     
     // Give wood every 30 seconds
     if (focusSeconds > 0 && focusSeconds % 30 === 0) {
-      wood += 1 * growthMultiplier;
+      wood += Math.round(1 * growthMultiplier);
       woodEl.textContent = Math.floor(wood);
+      saveForest();
       console.log("Wood earned at", focusSeconds, "seconds! Total:", Math.floor(wood));
     }
     
@@ -112,7 +113,8 @@ function startSession() {
       return;
     }
 
-    minutes += growthMultiplier;
+    // Always advance real time by 1 minute per interval. growthMultiplier only affects rewards.
+    minutes += 1;
     const floorMinutes = Math.floor(minutes);
     timerEl.textContent = `Timer: ${floorMinutes} min`;
 
@@ -157,12 +159,14 @@ document.getElementById("startBtn").onclick = () => {
 // Focus lock: stop on blur; restart automatically when visible again
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && growing) {
+    // stop the session and mark it as lost due to focus
     growing = false;
     lostFocus = true;
     alert("Focus lost — tree stopped growing.");
     if (growInterval) { clearInterval(growInterval); growInterval = null; }
     if (secondsInterval) { clearInterval(secondsInterval); secondsInterval = null; }
   } else if (!document.hidden && lostFocus) {
+    // user regained focus after losing it: restart the session automatically
     lostFocus = false;
     console.log("Focus regained — restarting session.");
     startSession();
