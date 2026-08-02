@@ -7,6 +7,7 @@ let focusSeconds = 0;
 let growInterval = null;
 let secondsInterval = null;
 let lastEssenceMinute = -1;
+let lostFocus = false; // NEW: track if session stopped due to focus loss
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
@@ -58,10 +59,19 @@ function showEssenceNotification() {
   setTimeout(() => notification.remove(), 2000);
 }
 
-document.getElementById("startBtn").onclick = () => {
-  console.log("Start button clicked!");
-  if (growing) return;
+// Extracted start logic so we can call it from the button and from visibilitychange
+function startSession() {
+  // clear any previous intervals to avoid duplicates
+  if (growInterval) {
+    clearInterval(growInterval);
+    growInterval = null;
+  }
+  if (secondsInterval) {
+    clearInterval(secondsInterval);
+    secondsInterval = null;
+  }
 
+  console.log("Starting session...");
   growing = true;
   minutes = 0;
   focusSeconds = 0;
@@ -72,12 +82,11 @@ document.getElementById("startBtn").onclick = () => {
   essenceCountdownEl.textContent = "120";
   treeEl.textContent = stages[0];
 
-  console.log("Session started!");
-
   // Seconds counter - updates every 1 second
   secondsInterval = setInterval(() => {
     if (!growing) {
       clearInterval(secondsInterval);
+      secondsInterval = null;
       return;
     }
     focusSeconds += 1;
@@ -94,6 +103,7 @@ document.getElementById("startBtn").onclick = () => {
   growInterval = setInterval(() => {
     if (!growing) {
       clearInterval(growInterval);
+      growInterval = null;
       return;
     }
 
@@ -128,19 +138,34 @@ document.getElementById("startBtn").onclick = () => {
       updateBiome();
       saveForest();
       clearInterval(growInterval);
+      growInterval = null;
       clearInterval(secondsInterval);
+      secondsInterval = null;
     }
 
   }, GROW_INTERVAL);
+}
+
+// Button now just calls startSession
+document.getElementById("startBtn").onclick = () => {
+  if (growing) return;
+  startSession();
 };
 
-// Focus lock
+// Focus lock: stop on blur; restart automatically when visible again
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && growing) {
+    // stop the session and mark it as lost due to focus
     growing = false;
+    lostFocus = true;
     alert("Focus lost — tree stopped growing.");
-    clearInterval(growInterval);
-    clearInterval(secondsInterval);
+    if (growInterval) { clearInterval(growInterval); growInterval = null; }
+    if (secondsInterval) { clearInterval(secondsInterval); secondsInterval = null; }
+  } else if (!document.hidden && lostFocus) {
+    // user regained focus after losing it: restart the session automatically
+    lostFocus = false;
+    console.log("Focus regained — restarting session.");
+    startSession();
   }
 });
 
