@@ -60,7 +60,7 @@ document.body.appendChild(notification);
   // Remove after animation completes
   console.log("Showing essence notification!");
   
-setTimeout(() => notification.remove(), 2000);
+setTimeout(() => notification.remove(), 3000);
 }
 
 document.getElementById("startBtn").onclick = () => {
