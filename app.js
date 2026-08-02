@@ -22,7 +22,7 @@ console.log("App.js loaded!");
 
 const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
 
-// GROW_INTERVAL: 60000 = 1 minute (real time)
+// GROW_INTERVAL: 60000 = 1 minute
 const GROW_INTERVAL = 60000;
 
 // Tree species based on session length
@@ -90,6 +90,13 @@ function startSession() {
     focusSeconds += 1;
     focusSecondsEl.textContent = focusSeconds;
     
+    // Give wood every 30 seconds
+    if (focusSeconds > 0 && focusSeconds % 30 === 0) {
+      wood += 1 * growthMultiplier;
+      woodEl.textContent = Math.floor(wood);
+      console.log("Wood earned at", focusSeconds, "seconds! Total:", Math.floor(wood));
+    }
+    
     // Update essence countdown
     const secondsUntil = getSecondsUntilNextEssence();
     essenceCountdownEl.textContent = secondsUntil;
@@ -105,8 +112,7 @@ function startSession() {
       return;
     }
 
-    // Advance real time by 1 minute per interval. growthMultiplier only affects rewards.
-    minutes += 1;
+    minutes += growthMultiplier;
     const floorMinutes = Math.floor(minutes);
     timerEl.textContent = `Timer: ${floorMinutes} min`;
 
@@ -114,14 +120,10 @@ function startSession() {
     treeEl.textContent = stages[stageIndex];
     animateTree();
 
-    // Wood scales with growthMultiplier, but time does not
-    wood += 2 * growthMultiplier;
-    woodEl.textContent = Math.floor(wood);
-
     // Essence given every 2 minutes - check if we just hit a 2-minute mark
     if (floorMinutes >= 2 && floorMinutes % 2 === 0 && floorMinutes !== lastEssenceMinute) {
       lastEssenceMinute = floorMinutes;
-      essence += 1 * growthMultiplier; // essence also scales with multiplier
+      essence += 1;
       essenceEl.textContent = essence;
       console.log("ESSENCE EARNED! Total:", essence, "At minute:", floorMinutes);
       showEssenceNotification();
@@ -173,8 +175,8 @@ function addTreeToForest(stageIndex, species) {
   tree.textContent = species.emoji;
   forestEl.appendChild(tree);
   
-  // Give 4 wood for planting a tree (kept from previous change)
-  wood += 4;
+  // Give 3 wood for planting a tree
+  wood += 3;
   woodEl.textContent = Math.floor(wood);
 }
 
@@ -219,6 +221,7 @@ function craftBench() {
     woodEl.textContent = wood;
     forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x</p>";
     increaseGrowth(0.1);
+    saveForest();
   }
 }
 
@@ -228,6 +231,7 @@ function craftLantern() {
     woodEl.textContent = wood;
     forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.2x</p>";
     increaseGrowth(0.2);
+    saveForest();
   }
 }
 
@@ -237,8 +241,9 @@ function craftTreehouse() {
     essence -= 5;
     woodEl.textContent = wood;
     essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.75x</p>";
-    increaseGrowth(0.75);
+    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.5x</p>";
+    increaseGrowth(0.5);
+    saveForest();
   }
 }
 
@@ -250,5 +255,6 @@ function craftShrine() {
     essenceEl.textContent = essence;
     forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.0x</p>";
     increaseGrowth(2.0);
+    saveForest();
   }
 }
