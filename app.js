@@ -6,7 +6,7 @@ let growthMultiplier = 1;
 let focusSeconds = 0;
 let growInterval = null;
 let secondsInterval = null;
-let lastEssenceMinute = -1;
+let lastEssenceMinute = -2;
 let lostFocus = false;
 
 const timerEl = document.getElementById("timer");
