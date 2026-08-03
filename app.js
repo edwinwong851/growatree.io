@@ -406,7 +406,7 @@ function craftLantern() {
 function craftTreehouse() {
   if (wood >= 40 && essence >= 7) {
     wood -= 40;
-    essence -= 5;
+    essence -= 2;
     woodEl.textContent = wood;
     essenceEl.textContent = essence;
     forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.75x</p>";
@@ -416,7 +416,7 @@ function craftTreehouse() {
 }
 
 function craftShrine() {
-  if (wood >= 50 && essence >= 15) {
+  if (wood >= 50 && essence >= 8) {
     wood -= 50;
     essence -= 15;
     woodEl.textContent = wood;
