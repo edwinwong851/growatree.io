@@ -418,7 +418,7 @@ function craftTreehouse() {
 function craftShrine() {
   if (wood >= 50 && essence >= 15) {
     wood -= 50;
-    essence -= 10;
+    essence -= 15;
     woodEl.textContent = wood;
     essenceEl.textContent = essence;
     forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.0x</p>";
