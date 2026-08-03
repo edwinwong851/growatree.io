@@ -1,65 +1,3 @@
-let minutes = 0;
-let wood = 0;
-let essence = 0;
-let growing = false;
-let growthMultiplier = 1;
-let focusSeconds = 0;
-let growInterval = null;
-let secondsInterval = null;
-let lastEssenceMinute = -2;
-let lostFocus = false;
-
-const timerEl = document.getElementById("timer");
-const treeEl = document.getElementById("tree");
-const woodEl = document.getElementById("wood");
-const essenceEl = document.getElementById("essence");
-const forestEl = document.getElementById("forest");
-const growthEl = document.getElementById("growth");
-const focusSecondsEl = document.getElementById("focusSecondsValue");
-const essenceCountdownEl = document.getElementById("essenceCountdownValue");
-
-console.log("App.js loaded!");
-
-const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
-
-// GROW_INTERVAL: 60000 = 60 seconds
-const GROW_INTERVAL = 600000;
-
-// Tree species based on session length
-const species = [
-  { name: "Birch", emoji: "🌱", min: 0 },
-  { name: "Oak", emoji: "🌿", min: 10 },
-  { name: "Redwood", emoji: "🌳", min: 20 },
-  { name: "Crystal Tree", emoji: "💠", min: 30 }
-];
-
-function getTreeSpecies(minutes) {
-  return species.filter(s => minutes >= s.min).pop();
-}
-
-function animateTree() {
-  treeEl.classList.add("tree-grow");
-  setTimeout(() => treeEl.classList.remove("tree-grow"), 500);
-}
-
-function getSecondsUntilNextEssence() {
-  const totalSeconds = focusSeconds;
-  const nextEssenceAt = Math.ceil(totalSeconds / 120) * 120;
-  return Math.max(0, nextEssenceAt - totalSeconds);
-}
-
-function showEssenceNotification() {
-  const notification = document.createElement("div");
-  notification.className = "essence-notification";
-  notification.textContent = "✨✨ +1 Essence! Yay";
-  document.body.appendChild(notification);
-  
-  console.log("Essence notification shown!");
-  appendTeacherLog && appendTeacherLog("Essence +1 earned");
-
-  setTimeout(() => notification.remove(), 5000);
-}
-
 /* ---------- Teacher panel injection (on-student-screen) ---------- */
 /* Small collapsible overlay that shows session metrics and events.
    Injected so no HTML edit is required. */
@@ -178,112 +116,150 @@ function updateTeacherPanel() {
 
 /* ---------- End teacher panel code ---------- */
 
+let minutes = 0;
+let wood = 0;
+let essence = 0;
+let growing = false;
+let growthMultiplier = 1;
+let focusSeconds = 0;
+let secondsInterval = null;
+let lastEssenceSecond = -1;
+let lastWoodSecond = -1;
+let lostFocus = false;
+
+const timerEl = document.getElementById("timer");
+const treeEl = document.getElementById("tree");
+const woodEl = document.getElementById("wood");
+const essenceEl = document.getElementById("essence");
+const forestEl = document.getElementById("forest");
+const growthEl = document.getElementById("growth");
+const focusSecondsEl = document.getElementById("focusSecondsValue");
+const essenceCountdownEl = document.getElementById("essenceCountdownValue");
+
+console.log("App.js loaded!");
+
+const stages = ["🌱", "🌿", "🌳", "🌲", "🌴"];
+
+// Tree species based on session length
+const species = [
+  { name: "Birch", emoji: "🌱", min: 0 },
+  { name: "Oak", emoji: "🌿", min: 10 },
+  { name: "Redwood", emoji: "🌳", min: 20 },
+  { name: "Crystal Tree", emoji: "💠", min: 30 }
+];
+
+function getTreeSpecies(minutes) {
+  return species.filter(s => minutes >= s.min).pop();
+}
+
+function animateTree() {
+  if (!treeEl) return;
+  treeEl.classList.add("tree-grow");
+  setTimeout(() => treeEl.classList.remove("tree-grow"), 500);
+}
+
+function getSecondsUntilNextEssence() {
+  const totalSeconds = focusSeconds;
+  const nextEssenceAt = Math.ceil(totalSeconds / 120) * 120;
+  return Math.max(0, nextEssenceAt - totalSeconds);
+}
+
+function showEssenceNotification() {
+  const notification = document.createElement("div");
+  notification.className = "essence-notification";
+  notification.textContent = "✨ +1 Essence! Yay";
+  document.body.appendChild(notification);
+  
+  console.log("Essence notification shown!");
+  
+  setTimeout(() => notification.remove(), 5000);
+}
+
 function startSession() {
-  if (growInterval) {
-    clearInterval(growInterval);
-    growInterval = null;
-  }
+  // Clear any existing tick
   if (secondsInterval) {
     clearInterval(secondsInterval);
     secondsInterval = null;
   }
 
   console.log("Starting session...");
-  appendTeacherLog && appendTeacherLog("Session started");
   growing = true;
   minutes = 0;
   focusSeconds = 0;
-  lastEssenceMinute = -1;
+  lastEssenceSecond = -1;
+  lastWoodSecond = -1;
 
   timerEl.textContent = "Timer: 0 min";
   focusSecondsEl.textContent = "0";
   essenceCountdownEl.textContent = "120";
   treeEl.textContent = stages[0];
 
-  updateTeacherPanel();
+  let prevStageIndex = 0;
 
-  // Seconds counter - updates every 1 second
+  // Single tick: handle seconds, wood, essence, growth, and session end
   secondsInterval = setInterval(() => {
     if (!growing) {
       clearInterval(secondsInterval);
       secondsInterval = null;
       return;
     }
+
     focusSeconds += 1;
     focusSecondsEl.textContent = focusSeconds;
-    
+
     // Give wood every 30 seconds
-    if (focusSeconds > 0 && focusSeconds % 30 === 0) {
+    if (focusSeconds > 0 && focusSeconds % 30 === 0 && focusSeconds !== lastWoodSecond) {
+      lastWoodSecond = focusSeconds;
       wood += Math.round(1 * growthMultiplier);
       woodEl.textContent = Math.floor(wood);
       saveForest();
       console.log("Wood earned at", focusSeconds, "seconds! Total:", Math.floor(wood));
-      appendTeacherLog && appendTeacherLog(`Wood earned (+${Math.round(1 * growthMultiplier)}) at ${focusSeconds}s`);
     }
-    
-    // Update essence countdown
+
+    // Give essence every 120 seconds (2 minutes)
+    if (focusSeconds > 0 && focusSeconds % 120 === 0 && focusSeconds !== lastEssenceSecond) {
+      lastEssenceSecond = focusSeconds;
+      essence += 1;
+      essenceEl.textContent = essence;
+      console.log("ESSENCE EARNED! Total:", essence, "At seconds:", focusSeconds);
+      showEssenceNotification();
+      saveForest();
+    }
+
+    // Update countdown to next essence
     const secondsUntil = getSecondsUntilNextEssence();
     essenceCountdownEl.textContent = secondsUntil;
-    
-    console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
 
-    // update teacher panel
-    updateTeacherPanel();
-  }, 1000);
-
-  // Growth interval - updates every GROW_INTERVAL (1 minute)
-  growInterval = setInterval(() => {
-    if (!growing) {
-      clearInterval(growInterval);
-      growInterval = null;
-      return;
-    }
-
-    // Always advance real time by 1 minute per interval. growthMultiplier only affects rewards.
-    minutes += 1;
+    // Update minutes/stage from the single source of truth: focusSeconds
+    minutes = Math.floor(focusSeconds / 60);
     const floorMinutes = Math.floor(minutes);
     timerEl.textContent = `Timer: ${floorMinutes} min`;
 
     const stageIndex = Math.min(stages.length - 1, floorMinutes);
     treeEl.textContent = stages[stageIndex];
-    animateTree();
-
-    // Essence given every 2 minutes - check if we just hit a 2-minute mark
-    if (floorMinutes >= 2 && floorMinutes % 2 === 0 && floorMinutes !== lastEssenceMinute) {
-      lastEssenceMinute = floorMinutes;
-      essence += 1;
-      essenceEl.textContent = essence;
-      console.log("ESSENCE EARNED! Total:", essence, "At minute:", floorMinutes);
-      appendTeacherLog && appendTeacherLog(`Essence +1 at minute ${floorMinutes}`);
-      showEssenceNotification();
+    if (stageIndex !== prevStageIndex) {
+      animateTree();
+      prevStageIndex = stageIndex;
     }
-    
-    // Update countdown
-    const secondsUntil = getSecondsUntilNextEssence();
-    essenceCountdownEl.textContent = secondsUntil;
 
-    // update teacher panel
-    updateTeacherPanel();
-
+    // End session at 5 minutes
     if (minutes >= 5) {
       growing = false;
       const sp = getTreeSpecies(minutes);
       addTreeToForest(stageIndex, sp);
       updateBiome();
       saveForest();
-      clearInterval(growInterval);
-      growInterval = null;
       clearInterval(secondsInterval);
       secondsInterval = null;
-      appendTeacherLog && appendTeacherLog('Session finished and tree planted');
-      updateTeacherPanel();
     }
 
-  }, GROW_INTERVAL);
+    console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
+  }, 1000);
 }
 
 // Button now just calls startSession
-document.getElementById("startBtn").onclick = () => {
+const startBtn = document.getElementById("startBtn");
+if (startBtn) startBtn.onclick = () => {
   if (growing) return;
   startSession();
 };
@@ -294,15 +270,11 @@ document.addEventListener("visibilitychange", () => {
     // stop the session and mark it as lost due to focus
     growing = false;
     lostFocus = true;
-    appendTeacherLog && appendTeacherLog('Focus lost — session stopped');
     alert("Focus lost — tree stopped growing.");
-    if (growInterval) { clearInterval(growInterval); growInterval = null; }
     if (secondsInterval) { clearInterval(secondsInterval); secondsInterval = null; }
-    updateTeacherPanel();
   } else if (!document.hidden && lostFocus) {
     // user regained focus after losing it: restart the session automatically
     lostFocus = false;
-    appendTeacherLog && appendTeacherLog('Focus regained — restarting session');
     console.log("Focus regained — restarting session.");
     startSession();
   }
@@ -317,9 +289,6 @@ function addTreeToForest(stageIndex, species) {
   // Give 3 wood for planting a tree
   wood += 3;
   woodEl.textContent = Math.floor(wood);
-
-  appendTeacherLog && appendTeacherLog(`Planted ${species.name} ${species.emoji} (+3 wood)`);
-  updateTeacherPanel();
 }
 
 function updateBiome() {
@@ -335,7 +304,6 @@ function saveForest() {
   localStorage.setItem("wood", wood);
   localStorage.setItem("essence", essence);
   localStorage.setItem("growthMultiplier", growthMultiplier);
-  appendTeacherLog && appendTeacherLog('Saved forest to localStorage');
 }
 
 function loadForest() {
@@ -347,40 +315,15 @@ function loadForest() {
   woodEl.textContent = wood;
   essenceEl.textContent = essence;
   growthEl.textContent = growthMultiplier.toFixed(1) + "x";
-
-  // create teacher panel (if not present) and seed its values
-  createTeacherPanel();
-  updateTeacherPanel();
 }
 
-// Ensure initialization runs after DOM is ready so the injected panel appears
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    try {
-      loadForest();
-      createTeacherPanel();
-      updateTeacherPanel();
-    } catch (e) {
-      console.warn('Initialization after DOMContentLoaded failed', e);
-    }
-  });
-} else {
-  try {
-    loadForest();
-    createTeacherPanel();
-    updateTeacherPanel();
-  } catch (e) {
-    console.warn('Initialization failed', e);
-  }
-}
+loadForest();
 
 // Crafting upgrades growth speed
 function increaseGrowth(amount) {
   growthMultiplier += amount;
   growthEl.textContent = growthMultiplier.toFixed(1) + "x";
   saveForest();
-  appendTeacherLog && appendTeacherLog(`Growth increased by ${amount}`);
-  updateTeacherPanel();
 }
 
 function craftBench() {
@@ -397,28 +340,28 @@ function craftLantern() {
   if (wood >= 20) {
     wood -= 20;
     woodEl.textContent = wood;
-    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.25x</p>";
-    increaseGrowth(0.25);
+    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.2x</p>";
+    increaseGrowth(0.2);
     saveForest();
   }
 }
 
 function craftTreehouse() {
-  if (wood >= 40 && essence >= 7) {
-    wood -= 40;
-    essence -= 2;
+  if (wood >= 50 && essence >= 5) {
+    wood -= 50;
+    essence -= 5;
     woodEl.textContent = wood;
     essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.75x</p>";
-    increaseGrowth(0.75);
+    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.5x</p>";
+    increaseGrowth(0.5);
     saveForest();
   }
 }
 
 function craftShrine() {
-  if (wood >= 50 && essence >= 8) {
-    wood -= 50;
-    essence -= 15;
+  if (wood >= 100 && essence >= 10) {
+    wood -= 100;
+    essence -= 10;
     woodEl.textContent = wood;
     essenceEl.textContent = essence;
     forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.0x</p>";
