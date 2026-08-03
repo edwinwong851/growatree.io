@@ -397,8 +397,8 @@ function craftLantern() {
   if (wood >= 20) {
     wood -= 20;
     woodEl.textContent = wood;
-    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.2x</p>";
-    increaseGrowth(0.2);
+    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.25x</p>";
+    increaseGrowth(0.25);
     saveForest();
   }
 }
