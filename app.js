@@ -51,7 +51,7 @@ function getSecondsUntilNextEssence() {
 function showEssenceNotification() {
   const notification = document.createElement("div");
   notification.className = "essence-notification";
-  notification.textContent = "✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨ +1 Essence! Yay";
+  notification.textContent = "✨✨ +1 Essence! Yay";
   document.body.appendChild(notification);
   
   console.log("Essence notification shown!");
