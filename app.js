@@ -207,8 +207,8 @@ function startSession() {
     focusSeconds += 1;
     focusSecondsEl.textContent = focusSeconds;
 
-    // Give wood every 30 seconds
-    if (focusSeconds > 0 && focusSeconds % 30 === 0 && focusSeconds !== lastWoodSecond) {
+    // Give wood every 20 seconds
+    if (focusSeconds > 0 && focusSeconds % 20 === 0 && focusSeconds !== lastWoodSecond) {
       lastWoodSecond = focusSeconds;
       wood += Math.round(1 * growthMultiplier);
       woodEl.textContent = Math.floor(wood);
