@@ -6,7 +6,7 @@ function createTeacherPanel() {
 
   const css = `
   #teacher-panel { position: fixed; top: 12px; right: 12px; width: 320px; z-index: 9999; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
-  #teacher-panel .tab { position: absolute; left: -72px; top: 0; transform: rotate(-90deg); transform-origin: left top; background:#2b7a78; color:#fff; padding:8px 12px; border-radius:6px 6px 0 0; cursor:pointer; }
+  #teacher-panel .tab { position: absolute; left: -72px; top: 0; transform: rotate(-90deg); transform-origin: left top; background:#2b7a78; color:#fff; padding:8px 12px; border-radius:6px 6px 0 0; }
   #teacher-panel .card { background: rgba(255,255,255,0.98); border-radius:10px; padding:12px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); }
   #teacher-panel .row { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
   #teacher-panel .label { color:#666; font-size:12px; width:110px; }
@@ -39,6 +39,7 @@ function createTeacherPanel() {
       <div class="row"><div class="label">Session</div><div id="tp-session" class="value">Idle</div></div>
       <div class="row"><div class="label">Timer (min)</div><div id="tp-timer" class="value">0</div></div>
       <div class="row"><div class="label">Focus seconds</div><div id="tp-focus" class="value">0</div></div>
+      <div class="row"><div class="label">Unfocused (s)</div><div id="tp-unfocused" class="value">0</div></div>
       <div class="row"><div class="label">Essence countdown (s)</div><div id="tp-countdown" class="value">—</div></div>
       <div class="row"><div class="label">Tree</div><div id="tp-tree" class="big-emoji">🌱</div></div>
       <div class="row"><div class="label">Wood</div><div id="tp-wood" class="value">0</div></div>
@@ -98,6 +99,7 @@ function updateTeacherPanel() {
   const tpSession = document.getElementById('tp-session');
   const tpTimer = document.getElementById('tp-timer');
   const tpFocus = document.getElementById('tp-focus');
+  const tpUnfocused = document.getElementById('tp-unfocused');
   const tpCountdown = document.getElementById('tp-countdown');
   const tpTree = document.getElementById('tp-tree');
   const tpWood = document.getElementById('tp-wood');
@@ -107,6 +109,7 @@ function updateTeacherPanel() {
   if (tpSession) tpSession.textContent = s + (lostFocus ? ' (lost focus)' : '');
   if (tpTimer) tpTimer.textContent = Math.floor(minutes);
   if (tpFocus) tpFocus.textContent = focusSeconds;
+  if (tpUnfocused) tpUnfocused.textContent = lastUnfocusedDuration || 0;
   if (tpCountdown) tpCountdown.textContent = getSecondsUntilNextEssence();
   if (tpTree) tpTree.textContent = treeEl ? treeEl.textContent : stages[0];
   if (tpWood) tpWood.textContent = Math.floor(wood);
@@ -126,6 +129,10 @@ let secondsInterval = null;
 let lastEssenceSecond = -1;
 let lastWoodSecond = -1;
 let lostFocus = false;
+
+// New: track pause/unfocused durations
+let pausedAt = null; // timestamp when page became hidden while growing
+let lastUnfocusedDuration = 0; // seconds for the most recent unfocused period
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
@@ -257,6 +264,77 @@ function startSession() {
   }, 1000);
 }
 
+// New: resume a session without resetting focusSeconds/minutes
+function resumeSession() {
+  if (secondsInterval) {
+    clearInterval(secondsInterval);
+    secondsInterval = null;
+  }
+
+  console.log("Resuming session...");
+  growing = true;
+  let prevStageIndex = Math.min(stages.length - 1, Math.floor(minutes));
+
+  secondsInterval = setInterval(() => {
+    if (!growing) {
+      clearInterval(secondsInterval);
+      secondsInterval = null;
+      return;
+    }
+
+    focusSeconds += 1;
+    focusSecondsEl.textContent = focusSeconds;
+
+    // Give wood every 20 seconds
+    if (focusSeconds > 0 && focusSeconds % 20 === 0 && focusSeconds !== lastWoodSecond) {
+      lastWoodSecond = focusSeconds;
+      wood += Math.round(1 * growthMultiplier);
+      woodEl.textContent = Math.floor(wood);
+      saveForest();
+      console.log("Wood earned at", focusSeconds, "seconds! Total:", Math.floor(wood));
+    }
+
+    // Give essence every 120 seconds (2 minutes)
+    if (focusSeconds > 0 && focusSeconds % 120 === 0 && focusSeconds !== lastEssenceSecond) {
+      lastEssenceSecond = focusSeconds;
+      essence += 1;
+      essenceEl.textContent = essence;
+      console.log("ESSENCE EARNED! Total:", essence, "At seconds:", focusSeconds);
+      showEssenceNotification();
+      saveForest();
+    }
+
+    // Update countdown to next essence
+    const secondsUntil = getSecondsUntilNextEssence();
+    essenceCountdownEl.textContent = secondsUntil;
+
+    // Update minutes/stage from the single source of truth: focusSeconds
+    minutes = Math.floor(focusSeconds / 60);
+    const floorMinutes = Math.floor(minutes);
+    timerEl.textContent = `Timer: ${floorMinutes} min`;
+
+    const stageIndex = Math.min(stages.length - 1, floorMinutes);
+    treeEl.textContent = stages[stageIndex];
+    if (stageIndex !== prevStageIndex) {
+      animateTree();
+      prevStageIndex = stageIndex;
+    }
+
+    // End session at 30 minutes
+    if (minutes >= 30) {
+      growing = false;
+      const sp = getTreeSpecies(minutes);
+      addTreeToForest(stageIndex, sp);
+      updateBiome();
+      saveForest();
+      clearInterval(secondsInterval);
+      secondsInterval = null;
+    }
+
+    console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
+  }, 1000);
+}
+
 // Button now just calls startSession
 const startBtn = document.getElementById("startBtn");
 if (startBtn) startBtn.onclick = () => {
@@ -270,13 +348,20 @@ document.addEventListener("visibilitychange", () => {
     // stop the session and mark it as lost due to focus
     growing = false;
     lostFocus = true;
+    pausedAt = Date.now();
+    appendTeacherLog && appendTeacherLog('Focus lost — session paused');
     alert("Focus lost — tree stopped growing, please stay in the app.");
     if (secondsInterval) { clearInterval(secondsInterval); secondsInterval = null; }
   } else if (!document.hidden && lostFocus) {
-    // user regained focus after losing it: restart the session automatically
+    // user regained focus after losing it: compute unfocused duration and resume
+    const now = Date.now();
+    lastUnfocusedDuration = pausedAt ? Math.floor((now - pausedAt) / 1000) : 0;
+    pausedAt = null;
     lostFocus = false;
-    console.log("Focus regained — restarting session.");
-    startSession();
+    appendTeacherLog && appendTeacherLog(`Focus regained — paused for ${lastUnfocusedDuration}s, resuming session.`);
+    console.log("Focus regained — restarting session. Unfocused seconds:", lastUnfocusedDuration);
+    // Resume session without resetting progress
+    resumeSession();
   }
 });
 
