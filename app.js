@@ -251,8 +251,8 @@ function startSession() {
       prevStageIndex = stageIndex;
     }
 
-    // End session at 5 minutes
-    if (minutes >= 5) {
+    // End session/ at 1000 minutes
+    if (minutes >= 1000) {
       growing = false;
       const sp = getTreeSpecies(minutes);
       addTreeToForest(stageIndex, sp);
