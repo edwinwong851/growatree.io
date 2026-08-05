@@ -6,15 +6,18 @@ if (document.getElementById('teacher-panel')) return; // already created
 
 const css = `
  #teacher-panel { position: fixed; top: 12px; right: 12px; width: 320px; z-index: 9999; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
-  #teacher-panel .tab { position: absolute; left: -72px; top: 0; transform: rotate(-90deg); transform-origin: left top; background:#2b7a78; color:#fff; padding:8px 12px; border-radius:6px 6px 0 0; cursor:pointer; }
-  #teacher-panel .tab { position: absolute; left: -72px; top: 0; transform: rotate(-90deg); transform-origin: left top; background:#2b7a78; color:#fff; padding:8px 12px; border-radius:6px 6px 0 0; }
+ #teacher-panel .tab { position: absolute; left: -72px; top: 0; transform: rotate(-90deg); transform-origin: left top; background:#2b7a78; color:#fff; padding:8px 12px; border-radius:6px 6px 0 0; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
  #teacher-panel .card { background: rgba(255,255,255,0.98); border-radius:10px; padding:12px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); }
  #teacher-panel .row { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
  #teacher-panel .label { color:#666; font-size:12px; width:110px; }
- #teacher-panel .value { font-weight:700; font-size:17.5px; }
- #teacher-panel .big-emoji { font-size:40px; }
- #teacher-panel .log { max-height:160px; overflow:auto; background:#f7f6f7; padding:8px; border-radius:7.5px; font-size:13px; color:#222; }
- #teacher-panel .muted { color:#888; font-size:15px; }
+  #teacher-panel .value { font-weight:700; font-size:16px; }
+  #teacher-panel .big-emoji { font-size:36px; }
+  #teacher-panel .log { max-height:160px; overflow:auto; background:#f7f7f7; padding:8px; border-radius:6px; font-size:13px; color:#222; }
+  #teacher-panel .muted { color:#888; font-size:12px; }
+  #teacher-panel .value { font-weight:700; font-size:17.5px; }
+  #teacher-panel .big-emoji { font-size:40px; }
+  #teacher-panel .log { max-height:160px; overflow:auto; background:#f7f6f7; padding:8px; border-radius:7.5px; font-size:13px; color:#222; }
+  #teacher-panel .muted { color:#888; font-size:15px; }
  #teacher-panel .controls { display:flex; gap:8px; justify-content:flex-end; }
  #teacher-panel.collapsed { width:48px; }
  #teacher-panel .collapse-btn { background:#ddd; border-radius:6px; padding:4px 8px; cursor:pointer; font-size:12px; }
@@ -107,8 +110,7 @@ const tpGrowth = document.getElementById('tp-growth');
 
 if (tpSession) tpSession.textContent = s + (lostFocus ? ' (lost focus)' : '');
 if (tpTimer) tpTimer.textContent = Math.floor(minutes);
-  if (tpFocus) tpFocus.textContent = focusSeconds;
-  if (tpFocus) tpFocus.textContent = Math.floor(focusSeconds);
+if (tpFocus) tpFocus.textContent = focusSeconds;
 if (tpCountdown) tpCountdown.textContent = getSecondsUntilNextEssence();
 if (tpTree) tpTree.textContent = treeEl ? treeEl.textContent : stages[0];
 if (tpWood) tpWood.textContent = Math.floor(wood);
@@ -128,10 +130,6 @@ let secondsInterval = null;
 let lastEssenceSecond = -1;
 let lastWoodSecond = -1;
 let lostFocus = false;
-
-// Track next award times (seconds of focused time)
-let nextWoodAt = 20;
-let nextEssenceAt = 120;
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
@@ -165,12 +163,9 @@ setTimeout(() => treeEl.classList.remove("tree-grow"), 500);
 }
 
 function getSecondsUntilNextEssence() {
-  const totalSeconds = focusSeconds;
-  const nextEssenceAt = Math.ceil(totalSeconds / 120) * 120;
-  return Math.max(0, nextEssenceAt - totalSeconds);
-  const totalSeconds = Math.floor(focusSeconds);
-  const nextEssenceAtCalc = Math.ceil(totalSeconds / 120) * 120;
-  return Math.max(0, nextEssenceAtCalc - totalSeconds);
+const totalSeconds = focusSeconds;
+const nextEssenceAt = Math.ceil(totalSeconds / 120) * 120;
+return Math.max(0, nextEssenceAt - totalSeconds);
 }
 
 function showEssenceNotification() {
@@ -198,10 +193,6 @@ focusSeconds = 0;
 lastEssenceSecond = -1;
 lastWoodSecond = -1;
 
-  // reset award timers
-  nextWoodAt = 20;
-  nextEssenceAt = 120;
-
 timerEl.textContent = "Timer: 0 min";
 focusSecondsEl.textContent = "0";
 essenceCountdownEl.textContent = "120";
@@ -217,65 +208,46 @@ secondsInterval = null;
 return;
 }
 
-    focusSeconds += 1;
-    focusSecondsEl.textContent = focusSeconds;
-    // Advance focused time using growthMultiplier to speed up/slower time
-    focusSeconds += growthMultiplier; // may be fractional
-    if (focusSecondsEl) focusSecondsEl.textContent = Math.floor(focusSeconds);
+focusSeconds += 1;
+focusSecondsEl.textContent = focusSeconds;
 
-    // Give wood every 20 seconds
-    if (focusSeconds > 0 && focusSeconds % 20 === 0 && focusSeconds !== lastWoodSecond) {
-      lastWoodSecond = focusSeconds;
-      wood += Math.round(1 * growthMultiplier);
-      woodEl.textContent = Math.floor(wood);
-    // Award wood for each 20s of focused time (handle multiple intervals if multiplier >1)
-    while (focusSeconds >= nextWoodAt) {
-      wood += 1; // base award per 20s
-      nextWoodAt += 20;
-      if (woodEl) woodEl.textContent = Math.floor(wood);
+// Give wood every 20 seconds
+if (focusSeconds > 0 && focusSeconds % 20 === 0 && focusSeconds !== lastWoodSecond) {
+lastWoodSecond = focusSeconds;
+wood += Math.round(1 * growthMultiplier);
+woodEl.textContent = Math.floor(wood);
 saveForest();
-      console.log("Wood earned at", focusSeconds, "seconds! Total:", Math.floor(wood));
-      console.log("Wood earned at", Math.floor(focusSeconds), "seconds! Total:", Math.floor(wood));
+console.log("Wood earned at", focusSeconds, "seconds! Total:", Math.floor(wood));
 }
 
-    // Give essence every 120 seconds (2 minutes)
-    if (focusSeconds > 0 && focusSeconds % 120 === 0 && focusSeconds !== lastEssenceSecond) {
-      lastEssenceSecond = focusSeconds;
-    // Award essence for each 120s of focused time
-    while (focusSeconds >= nextEssenceAt) {
+// Give essence every 120 seconds (2 minutes)
+if (focusSeconds > 0 && focusSeconds % 120 === 0 && focusSeconds !== lastEssenceSecond) {
+lastEssenceSecond = focusSeconds;
 essence += 1;
-      essenceEl.textContent = essence;
-      console.log("ESSENCE EARNED! Total:", essence, "At seconds:", focusSeconds);
-      nextEssenceAt += 120;
-      if (essenceEl) essenceEl.textContent = essence;
-      console.log("ESSENCE EARNED! Total:", essence, "At seconds:", Math.floor(focusSeconds));
+essenceEl.textContent = essence;
+console.log("ESSENCE EARNED! Total:", essence, "At seconds:", focusSeconds);
 showEssenceNotification();
 saveForest();
 }
 
 // Update countdown to next essence
 const secondsUntil = getSecondsUntilNextEssence();
-    essenceCountdownEl.textContent = secondsUntil;
-    if (essenceCountdownEl) essenceCountdownEl.textContent = secondsUntil;
+essenceCountdownEl.textContent = secondsUntil;
 
 // Update minutes/stage from the single source of truth: focusSeconds
 minutes = Math.floor(focusSeconds / 60);
 const floorMinutes = Math.floor(minutes);
-    timerEl.textContent = `Timer: ${floorMinutes} min`;
-    if (timerEl) timerEl.textContent = `Timer: ${floorMinutes} min`;
+timerEl.textContent = `Timer: ${floorMinutes} min`;
 
 const stageIndex = Math.min(stages.length - 1, floorMinutes);
-    treeEl.textContent = stages[stageIndex];
-    if (treeEl) treeEl.textContent = stages[stageIndex];
+treeEl.textContent = stages[stageIndex];
 if (stageIndex !== prevStageIndex) {
 animateTree();
 prevStageIndex = stageIndex;
 }
 
-    // End session at 300 minutes
-    if (minutes >= 300) {
-    // End session at 5 minutes
-    if (minutes >= 5) {
+// End session at 5 minutes
+if (minutes >= 5) {
 growing = false;
 const sp = getTreeSpecies(minutes);
 addTreeToForest(stageIndex, sp);
@@ -285,8 +257,7 @@ clearInterval(secondsInterval);
 secondsInterval = null;
 }
 
-    console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
-    console.log("Seconds:", Math.floor(focusSeconds), "Until next essence:", secondsUntil);
+console.log("Seconds:", focusSeconds, "Until next essence:", secondsUntil);
 }, 1000);
 }
 
@@ -303,8 +274,7 @@ if (document.hidden && growing) {
 // stop the session and mark it as lost due to focus
 growing = false;
 lostFocus = true;
-    alert("Focus lost — tree stopped growing, please stay in the app.");
-    alert("Focus lost — tree stopped growing.");
+alert("Focus lost — tree stopped growing.");
 if (secondsInterval) { clearInterval(secondsInterval); secondsInterval = null; }
 } else if (!document.hidden && lostFocus) {
 // user regained focus after losing it: restart the session automatically
@@ -319,8 +289,9 @@ const tree = document.createElement("span");
 tree.className = "tree-icon";
 tree.textContent = species.emoji;
 forestEl.appendChild(tree);
-  // Give 3 wood for planting a tree
-  wood += 3;
+
+// Give 3 wood for planting a tree
+wood += 3;
 woodEl.textContent = Math.floor(wood);
 }
 
@@ -345,8 +316,7 @@ wood = Number(localStorage.getItem("wood")) || 0;
 essence = Number(localStorage.getItem("essence")) || 0;
 growthMultiplier = Number(localStorage.getItem("growthMultiplier")) || 1;
 
-  woodEl.textContent = wood;
-  woodEl.textContent = Math.floor(wood);
+woodEl.textContent = wood;
 essenceEl.textContent = essence;
 growthEl.textContent = growthMultiplier.toFixed(1) + "x";
 }
@@ -363,8 +333,7 @@ saveForest();
 function craftBench() {
 if (wood >= 10) {
 wood -= 10;
-    woodEl.textContent = wood;
-    woodEl.textContent = Math.floor(wood);
+woodEl.textContent = wood;
 forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x</p>";
 increaseGrowth(0.1);
 saveForest();
@@ -374,81 +343,33 @@ saveForest();
 function craftLantern() {
 if (wood >= 20) {
 wood -= 20;
-    woodEl.textContent = wood;
-    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.3x</p>";
-    increaseGrowth(0.3);
-    woodEl.textContent = Math.floor(wood);
-    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.3x</p>";
-    increaseGrowth(0.3);
+woodEl.textContent = wood;
+forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.2x</p>";
+increaseGrowth(0.2);
 saveForest();
 }
 }
 
 function craftTreehouse() {
-  if (wood >= 40 && essence >= 2) {
-    wood -= 40;
-    essence -= 2;
-    woodEl.textContent = wood;
-    essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +1.2x</p>";
-    increaseGrowth(1.2);
-    saveForest();
-  }
-}
-
-// Shrine variant A: 80 wood, 5 essence
-function craftShrineA() {
-  if (wood >= 80 && essence >= 5) {
-    wood -= 80;
-  if (wood >= 50 && essence >= 5) {
-    wood -= 50;
+if (wood >= 50 && essence >= 5) {
+wood -= 50;
 essence -= 5;
-    woodEl.textContent = wood;
-    woodEl.textContent = Math.floor(wood);
+woodEl.textContent = wood;
 essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>⛩️ Shrine (A) crafted! Growth speed +2.5x</p>";
-    increaseGrowth(2.5);
-    forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.5x</p>";
-    increaseGrowth(0.5);
+forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.5x</p>";
+increaseGrowth(0.5);
 saveForest();
 }
 }
 
-// Shrine variant B: 50 wood, 7 essence
-function craftShrineB() {
-  if (wood >= 50 && essence >= 7) {
-    wood -= 50;
-    essence -= 7;
-    woodEl.textContent = wood;
 function craftShrine() {
-  if (wood >= 100 && essence >= 10) {
-    wood -= 100;
-    essence -= 10;
-    woodEl.textContent = Math.floor(wood);
+if (wood >= 100 && essence >= 10) {
+wood -= 100;
+essence -= 10;
+woodEl.textContent = wood;
 essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>⛩️ Shrine (B) crafted! Growth speed +2.0x</p>";
-    forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.0x</p>";
+forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.0x</p>";
 increaseGrowth(2.0);
 saveForest();
 }
-}
-
-// Backwards-compatible default: craftShrine() maps to variant A
-function craftShrine() {
-  craftShrineA();
-}
-
-// Initialize teacher panel UI and updater once the DOM is ready
-(function initTeacherPanel() {
-if (typeof document === 'undefined') return;
-function setup() {
-try {
-createTeacherPanel();
-} catch (e) {
-console.warn('createTeacherPanel failed', e);
-}
-// Keep the teacher panel in sync with app state
-setInterval(() => {
-try { updateTeacherPanel(); } catch (e) { /* ignore */ }
-}, 1000);
 }
