@@ -10,10 +10,10 @@ function createTeacherPanel() {
   #teacher-panel .card { background: rgba(255,255,255,0.98); border-radius:10px; padding:12px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); }
   #teacher-panel .row { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
   #teacher-panel .label { color:#666; font-size:12px; width:110px; }
-  #teacher-panel .value { font-weight:700; font-size:16px; }
-  #teacher-panel .big-emoji { font-size:36px; }
-  #teacher-panel .log { max-height:160px; overflow:auto; background:#f7f7f7; padding:8px; border-radius:6px; font-size:13px; color:#222; }
-  #teacher-panel .muted { color:#888; font-size:12px; }
+  #teacher-panel .value { font-weight:700; font-size:17.5px; }
+  #teacher-panel .big-emoji { font-size:40px; }
+  #teacher-panel .log { max-height:160px; overflow:auto; background:#f7f6f7; padding:8px; border-radius:7.5px; font-size:13px; color:#222; }
+  #teacher-panel .muted { color:#888; font-size:15px; }
   #teacher-panel .controls { display:flex; gap:8px; justify-content:flex-end; }
   #teacher-panel.collapsed { width:48px; }
   #teacher-panel .collapse-btn { background:#ddd; border-radius:6px; padding:4px 8px; cursor:pointer; font-size:12px; }
