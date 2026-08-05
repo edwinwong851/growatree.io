@@ -172,7 +172,7 @@ document.body.appendChild(notification);
 
 console.log("Essence notification shown!");
 
-setTimeout(() => notification.remove(), 5000);
+setTimeout(() => notification.remove(), 2000);
 }
 
 function startSession() {
@@ -242,8 +242,8 @@ animateTree();
 prevStageIndex = stageIndex;
 }
 
-    // End session at 5 minutes
-    if (minutes >= 5) {
+    // End session at 30 minutes
+    if (minutes >= 30) {
     // End session at 30 minutes
     if (minutes >= 30) {
 growing = false;
@@ -272,7 +272,6 @@ if (document.hidden && growing) {
 // stop the session and mark it as lost due to focus
 growing = false;
 lostFocus = true;
-    alert("Focus lost — tree stopped growing.");
     alert("Focus lost — tree stopped growing, please stay in the app.");
 if (secondsInterval) { clearInterval(secondsInterval); secondsInterval = null; }
 } else if (!document.hidden && lostFocus) {
