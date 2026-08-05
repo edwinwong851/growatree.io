@@ -319,9 +319,6 @@ const tree = document.createElement("span");
 tree.className = "tree-icon";
 tree.textContent = species.emoji;
 forestEl.appendChild(tree);
-
-  // Give 2 wood for planting a tree
-  wood += 2;
   // Give 3 wood for planting a tree
   wood += 3;
 woodEl.textContent = Math.floor(wood);
@@ -381,8 +378,8 @@ wood -= 20;
     forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.3x</p>";
     increaseGrowth(0.3);
     woodEl.textContent = Math.floor(wood);
-    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.2x</p>";
-    increaseGrowth(0.2);
+    forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.3x</p>";
+    increaseGrowth(0.3);
 saveForest();
 }
 }
@@ -455,10 +452,3 @@ setInterval(() => {
 try { updateTeacherPanel(); } catch (e) { /* ignore */ }
 }, 1000);
 }
-
-if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', setup);
-} else {
-setup();
-}
-})();
