@@ -52,33 +52,10 @@ function createTeacherPanel() {
   `;
   document.body.appendChild(panel);
 
-  // Restore teacher panel state (collapsed + logs) from localStorage
-  try {
-    const saved = JSON.parse(localStorage.getItem('teacherPanel') || '{}');
-    const container = document.getElementById('tp-log');
-    if (saved.logs && Array.isArray(saved.logs) && container) {
-      // restore logs (most recent first)
-      for (let i = saved.logs.length - 1; i >= 0; i--) {
-        const entry = saved.logs[i];
-        const el = document.createElement('div');
-        el.textContent = entry;
-        container.prepend(el);
-      }
-    }
-    // apply collapsed if present
-    if (saved.collapsed) {
-      panel.classList.add('collapsed');
-      const inner = panel.querySelector('.card-inner');
-      if (inner) inner.style.display = 'none';
-    }
-  } catch (e) {
-    console.warn('Failed to restore teacher panel state', e);
-  }
-
   // hookup events
   const tab = document.getElementById('teacherTab');
   const collapseBtn = document.getElementById('collapseBtn');
-  let collapsed = panel.classList.contains('collapsed');
+  let collapsed = false;
   tab.addEventListener('click', () => {
     collapsed = !collapsed;
     if (collapsed) {
@@ -90,22 +67,11 @@ function createTeacherPanel() {
       panel.querySelector('.card-inner').style.display = '';
       tab.textContent = 'Teacher';
     }
-    // persist collapsed state
-    try {
-      const saved = JSON.parse(localStorage.getItem('teacherPanel') || '{}');
-      saved.collapsed = collapsed;
-      localStorage.setItem('teacherPanel', JSON.stringify(saved));
-    } catch (e) { /* ignore */ }
   });
   collapseBtn.addEventListener('click', () => {
     collapsed = true;
     panel.classList.add('collapsed');
     panel.querySelector('.card-inner').style.display = 'none';
-    try {
-      const saved = JSON.parse(localStorage.getItem('teacherPanel') || '{}');
-      saved.collapsed = true;
-      localStorage.setItem('teacherPanel', JSON.stringify(saved));
-    } catch (e) { /* ignore */ }
   });
 
   // helper log append function exposed globally for brevity
@@ -115,32 +81,16 @@ function createTeacherPanel() {
       if (!container) return;
       const el = document.createElement('div');
       const at = new Date().toLocaleTimeString();
-      const full = `[${at}] ${msg}`;
-      el.textContent = full;
+      el.textContent = `[${at}] ${msg}`;
       container.prepend(el);
-      // persist into localStorage
-      try {
-        const saved = JSON.parse(localStorage.getItem('teacherPanel') || '{}');
-        saved.logs = saved.logs || [];
-        saved.logs.unshift(full);
-        if (saved.logs.length > 200) saved.logs = saved.logs.slice(0, 200);
-        localStorage.setItem('teacherPanel', JSON.stringify(saved));
-      } catch (e) { /* ignore */ }
       while (container.childNodes.length > 200) container.removeChild(container.lastChild);
     } catch (e) {
       console.warn('appendTeacherLog failed', e);
     }
   };
 
-  // only add an initial seed if there are no previous logs
-  try {
-    const saved = JSON.parse(localStorage.getItem('teacherPanel') || '{}');
-    if (!saved.logs || !Array.isArray(saved.logs) || saved.logs.length === 0) {
-      appendTeacherLog('Teacher panel initialized');
-    }
-  } catch (e) {
-    appendTeacherLog('Teacher panel initialized');
-  }
+  // initial seed
+  appendTeacherLog('Teacher panel initialized');
 }
 
 function updateTeacherPanel() {
@@ -397,9 +347,9 @@ function craftLantern() {
 }
 
 function craftTreehouse() {
-  if (wood >= 50 && essence >= 5) {
-    wood -= 50;
-    essence -= 5;
+  if (wood >= 40 && essence >= 2) {
+    wood -= 40;
+    essence -= 2;
     woodEl.textContent = wood;
     essenceEl.textContent = essence;
     forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.5x</p>";
@@ -408,16 +358,35 @@ function craftTreehouse() {
   }
 }
 
-function craftShrine() {
-  if (wood >= 100 && essence >= 10) {
-    wood -= 100;
-    essence -= 10;
+// Shrine variant A: 80 wood, 5 essence
+function craftShrineA() {
+  if (wood >= 80 && essence >= 5) {
+    wood -= 80;
+    essence -= 5;
     woodEl.textContent = wood;
     essenceEl.textContent = essence;
-    forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.0x</p>";
+    forestEl.innerHTML += "<p>⛩️ Shrine (A) crafted! Growth speed +2.0x</p>";
     increaseGrowth(2.0);
     saveForest();
   }
+}
+
+// Shrine variant B: 50 wood, 7 essence
+function craftShrineB() {
+  if (wood >= 50 && essence >= 7) {
+    wood -= 50;
+    essence -= 7;
+    woodEl.textContent = wood;
+    essenceEl.textContent = essence;
+    forestEl.innerHTML += "<p>⛩️ Shrine (B) crafted! Growth speed +2.0x</p>";
+    increaseGrowth(2.0);
+    saveForest();
+  }
+}
+
+// Backwards-compatible default: craftShrine() maps to variant A
+function craftShrine() {
+  craftShrineA();
 }
 
 // Initialize teacher panel UI and updater once the DOM is ready
