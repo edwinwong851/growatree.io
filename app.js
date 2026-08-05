@@ -6,7 +6,7 @@ function createTeacherPanel() {
 
   const css = `
   #teacher-panel { position: fixed; top: 12px; right: 12px; width: 320px; z-index: 9999; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
-  #teacher-panel .tab { position: absolute; left: -72px; top: 0; transform: rotate(-90deg); transform-origin: left top; background:#2b7a78; color:#fff; padding:8px 12px; border-radius:6px 6px 0 0; cursor:pointer; font-weight:600; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  #teacher-panel .tab { position: absolute; left: -72px; top: 0; transform: rotate(-90deg); transform-origin: left top; background:#2b7a78; color:#fff; padding:8px 12px; border-radius:6px 6px 0 0; cursor:pointer; }
   #teacher-panel .card { background: rgba(255,255,255,0.98); border-radius:10px; padding:12px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); }
   #teacher-panel .row { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
   #teacher-panel .label { color:#666; font-size:12px; width:110px; }
@@ -369,3 +369,25 @@ function craftShrine() {
     saveForest();
   }
 }
+
+// Initialize teacher panel UI and updater once the DOM is ready
+(function initTeacherPanel() {
+  if (typeof document === 'undefined') return;
+  function setup() {
+    try {
+      createTeacherPanel();
+    } catch (e) {
+      console.warn('createTeacherPanel failed', e);
+    }
+    // Keep the teacher panel in sync with app state
+    setInterval(() => {
+      try { updateTeacherPanel(); } catch (e) { /* ignore */ }
+    }, 1000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
+})();
