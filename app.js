@@ -121,8 +121,8 @@ if (tpGrowth) tpGrowth.textContent = growthMultiplier.toFixed(1) + 'x';
 /* ---------- End teacher panel code ---------- */
 
 let minutes = 0;
-let wood = 0;
-let essence = 0;
+let wood = 10;
+let essence = 1;
 let growing = false;
 let growthMultiplier = 1;
 let focusSeconds = 0;
@@ -171,7 +171,7 @@ return Math.max(0, nextEssenceAt - totalSeconds);
 function showEssenceNotification() {
 const notification = document.createElement("div");
 notification.className = "essence-notification";
-notification.textContent = "✨ +1 Essence! Yay";
+notification.textContent = "✨ ✨+1 Essence! Yay";
 document.body.appendChild(notification);
 
 console.log("Essence notification shown!");
