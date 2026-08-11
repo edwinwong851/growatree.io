@@ -363,7 +363,7 @@ saveForest();
 }
 
 function craftShrine() {
-if (wood >= 80 && Iron >= 5) {
+if (wood >= 90 && Iron >= 4) {
 wood -= 80;
 Iron -= 5;
 woodEl.textContent = wood;
@@ -375,7 +375,7 @@ saveForest();
 }
 
 function craftShrine() {
-if (wood >= 50 && Iron >= 7) {
+if (wood >= 50 && Iron >= 8) {
 wood -= 50;
 Iron -= 7;
 woodEl.textContent = wood;
