@@ -246,8 +246,8 @@ animateTree();
 prevStageIndex = stageIndex;
 }
 
-// End session at 5 minutes
-if (minutes >= 5) {
+// End session at 100 minutes
+if (minutes >= 100) {
 growing = false;
 const sp = getTreeSpecies(minutes);
 addTreeToForest(stageIndex, sp);
@@ -351,7 +351,7 @@ saveForest();
 }
 
 function craftTreehouse() {
-if (wood >= 50 && essence >= 5) {
+if (wood >= 1 && essence >= 0) {
 wood -= 50;
 essence -= 5;
 woodEl.textContent = wood;
