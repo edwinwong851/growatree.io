@@ -385,3 +385,16 @@ increaseGrowth(2.1);
 saveForest();
 }
 }
+
+
+function craftMiner() {
+if (wood >= 50 && Iron >= 0) {
+wood -= 50;
+Iron -= 0;
+woodEl.textContent = wood;
+IronEl.textContent = Iron;
+forestEl.innerHTML += "<p>⛏person Miner crafted! Iron growth speed +0.1x</p>";
+increaseironGrowth(0.1);
+saveForest();
+}
+}
