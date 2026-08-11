@@ -43,10 +43,10 @@ panel.innerHTML = `
      <div class="row"><div class="label">Session</div><div id="tp-session" class="value">Idle</div></div>
      <div class="row"><div class="label">Timer (min)</div><div id="tp-timer" class="value">0</div></div>
      <div class="row"><div class="label">Focus seconds</div><div id="tp-focus" class="value">0</div></div>
-     <div class="row"><div class="label">iron countdown (s)</div><div id="tp-countdown" class="value">—</div></div>
+     <div class="row"><div class="label">Iron countdown (s)</div><div id="tp-countdown" class="value">—</div></div>
      <div class="row"><div class="label">Tree</div><div id="tp-tree" class="big-emoji">🌱</div></div>
      <div class="row"><div class="label">Wood</div><div id="tp-wood" class="value">0</div></div>
-     <div class="row"><div class="label">iron</div><div id="tp-iron" class="value">0</div></div>
+     <div class="row"><div class="label">Iron</div><div id="tp-Iron" class="value">0</div></div>
      <div class="row"><div class="label">Growth</div><div id="tp-growth" class="value">1.0x</div></div>
      <div style="margin-top:8px">
        <div class="label muted">Recent events</div>
@@ -105,16 +105,16 @@ const tpFocus = document.getElementById('tp-focus');
 const tpCountdown = document.getElementById('tp-countdown');
 const tpTree = document.getElementById('tp-tree');
 const tpWood = document.getElementById('tp-wood');
-const tpiron = document.getElementById('tp-iron');
+const tpIron = document.getElementById('tp-Iron');
 const tpGrowth = document.getElementById('tp-growth');
 
 if (tpSession) tpSession.textContent = s + (lostFocus ? ' (lost focus)' : '');
 if (tpTimer) tpTimer.textContent = Math.floor(minutes);
 if (tpFocus) tpFocus.textContent = focusSeconds;
-if (tpCountdown) tpCountdown.textContent = getSecondsUntilNextiron();
+if (tpCountdown) tpCountdown.textContent = getSecondsUntilNextIron();
 if (tpTree) tpTree.textContent = treeEl ? treeEl.textContent : stages[0];
 if (tpWood) tpWood.textContent = Math.floor(wood);
-if (tpiron) tpiron.textContent = iron;
+if (tpIron) tpIron.textContent = Iron;
 if (tpGrowth) tpGrowth.textContent = growthMultiplier.toFixed(1) + 'x';
 }
 
@@ -122,23 +122,23 @@ if (tpGrowth) tpGrowth.textContent = growthMultiplier.toFixed(1) + 'x';
 
 let minutes = 0;
 let wood = 0;
-let iron = 0;
+let Iron = 0;
 let growing = false;
 let growthMultiplier = 1;
 let focusSeconds = 0;
 let secondsInterval = null;
-let lastironSecond = -1;
+let lastIronSecond = -1;
 let lastWoodSecond = -1;
 let lostFocus = false;
 
 const timerEl = document.getElementById("timer");
 const treeEl = document.getElementById("tree");
 const woodEl = document.getElementById("wood");
-const ironEl = document.getElementById("iron");
+const IronEl = document.getElementById("Iron");
 const forestEl = document.getElementById("forest");
 const growthEl = document.getElementById("growth");
 const focusSecondsEl = document.getElementById("focusSecondsValue");
-const ironCountdownEl = document.getElementById("ironCountdownValue");
+const IronCountdownEl = document.getElementById("IronCountdownValue");
 
 console.log("App.js loaded!");
 
@@ -162,19 +162,19 @@ treeEl.classList.add("tree-grow");
 setTimeout(() => treeEl.classList.remove("tree-grow"), 500);
 }
 
-function getSecondsUntilNextiron() {
+function getSecondsUntilNextIron() {
 const totalSeconds = focusSeconds;
-const nextironAt = Math.ceil(totalSeconds / 120) * 120;
-return Math.max(0, nextironAt - totalSeconds);
+const nextIronAt = Math.ceil(totalSeconds / 120) * 120;
+return Math.max(0, nextIronAt - totalSeconds);
 }
 
-function showironNotification() {
+function showIronNotification() {
 const notification = document.createElement("div");
-notification.className = "iron-notification";
-notification.textContent = "✨ ✨+1 iron! Yay";
+notification.className = "Iron-notification";
+notification.textContent = "✨ ✨+1 Iron! Yay";
 document.body.appendChild(notification);
 
-console.log("iron notification shown!");
+console.log("Iron notification shown!");
 
 setTimeout(() => notification.remove(), 5000);
 }
@@ -190,17 +190,17 @@ console.log("Starting session...");
 growing = true;
 minutes = 0;
 focusSeconds = 0;
-lastironSecond = -1;
+lastIronSecond = -1;
 lastWoodSecond = -1;
 
 timerEl.textContent = "Timer: 0 min";
 focusSecondsEl.textContent = "0";
-ironCountdownEl.textContent = "120";
+IronCountdownEl.textContent = "120";
 treeEl.textContent = stages[0];
 
 let prevStageIndex = 0;
 
-// Single tick: handle seconds, wood, iron, growth, and session end
+// Single tick: handle seconds, wood, Iron, growth, and session end
 secondsInterval = setInterval(() => {
 if (!growing) {
 clearInterval(secondsInterval);
@@ -220,19 +220,19 @@ saveForest();
 console.log("Wood earned at", focusSeconds, "seconds! Total:", Math.floor(wood));
 }
 
-// Give iron every 120 seconds (2 minutes)
-if (focusSeconds > 0 && focusSeconds % 120 === 0 && focusSeconds !== lastironSecond) {
-lastironSecond = focusSeconds;
-iron += 1;
-ironEl.textContent = iron;
-console.log("iron EARNED! Total:", iron, "At seconds:", focusSeconds);
-showironNotification();
+// Give Iron every 120 seconds (2 minutes)
+if (focusSeconds > 0 && focusSeconds % 120 === 0 && focusSeconds !== lastIronSecond) {
+lastIronSecond = focusSeconds;
+Iron += 1;
+IronEl.textContent = Iron;
+console.log("Iron EARNED! Total:", Iron, "At seconds:", focusSeconds);
+showIronNotification();
 saveForest();
 }
 
-// Update countdown to next iron
-const secondsUntil = getSecondsUntilNextiron();
-ironCountdownEl.textContent = secondsUntil;
+// Update countdown to next Iron
+const secondsUntil = getSecondsUntilNextIron();
+IronCountdownEl.textContent = secondsUntil;
 
 // Update minutes/stage from the single source of truth: focusSeconds
 minutes = Math.floor(focusSeconds / 60);
@@ -257,7 +257,7 @@ clearInterval(secondsInterval);
 secondsInterval = null;
 }
 
-console.log("Seconds:", focusSeconds, "Until next iron:", secondsUntil);
+console.log("Seconds:", focusSeconds, "Until next Iron:", secondsUntil);
 }, 1000);
 }
 
@@ -306,18 +306,18 @@ else if (count >= 10) document.body.style.background = "#f1f8e9"; // Meadow
 function saveForest() {
 localStorage.setItem("forest", forestEl.innerHTML);
 localStorage.setItem("wood", wood);
-localStorage.setItem("iron", iron);
+localStorage.setItem("Iron", Iron);
 localStorage.setItem("growthMultiplier", growthMultiplier);
 }
 
 function loadForest() {
 forestEl.innerHTML = localStorage.getItem("forest") || "";
 wood = Number(localStorage.getItem("wood")) || 0;
-iron = Number(localStorage.getItem("iron")) || 0;
+Iron = Number(localStorage.getItem("Iron")) || 0;
 growthMultiplier = Number(localStorage.getItem("growthMultiplier")) || 1;
 
 woodEl.textContent = wood;
-ironEl.textContent = iron;
+IronEl.textContent = Iron;
 growthEl.textContent = growthMultiplier.toFixed(1) + "x";
 }
 
@@ -351,11 +351,11 @@ saveForest();
 }
 
 function craftTreehouse() {
-if (wood >= 40 && iron >= 2) {
+if (wood >= 40 && Iron >= 2) {
 wood -= 40;
-iron -= 2;
+Iron -= 2;
 woodEl.textContent = wood;
-ironEl.textContent = iron;
+IronEl.textContent = Iron;
 forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.75x</p>";
 increaseGrowth(0.75);
 saveForest();
@@ -363,11 +363,11 @@ saveForest();
 }
 
 function craftShrine() {
-if (wood >= 80 && iron >= 5) {
+if (wood >= 80 && Iron >= 5) {
 wood -= 80;
-iron -= 5;
+Iron -= 5;
 woodEl.textContent = wood;
-ironEl.textContent = iron;
+IronEl.textContent = Iron;
 forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.5x</p>";
 increaseGrowth(2.5);
 saveForest();
@@ -375,11 +375,11 @@ saveForest();
 }
 
 function craftShrine() {
-if (wood >= 50 && iron >= 7) {
+if (wood >= 50 && Iron >= 7) {
 wood -= 50;
-iron -= 7;
+Iron -= 7;
 woodEl.textContent = wood;
-ironEl.textContent = iron;
+IronEl.textContent = Iron;
 forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.0x</p>";
 increaseGrowth(2.0);
 saveForest();
