@@ -341,23 +341,23 @@ saveForest();
 }
 
 function craftLantern() {
-if (wood >= 20) {
-wood -= 20;
+if (wood >= 25) {
+wood -= 25;
 woodEl.textContent = wood;
-forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.2x</p>";
-increaseGrowth(0.2);
+forestEl.innerHTML += "<p>🏮 Lantern crafted! Growth speed +0.3x</p>";
+increaseGrowth(0.3);
 saveForest();
 }
 }
 
 function craftTreehouse() {
 if (wood >= 40 && essence >= 2) {
-wood -= 50;
-essence -= 5;
+wood -= 40;
+essence -= 2;
 woodEl.textContent = wood;
 essenceEl.textContent = essence;
 forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.75x</p>";
-increaseGrowth(0.5);
+increaseGrowth(0.75);
 saveForest();
 }
 }
@@ -369,6 +369,18 @@ essence -= 5;
 woodEl.textContent = wood;
 essenceEl.textContent = essence;
 forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.5x</p>";
+increaseGrowth(2.5);
+saveForest();
+}
+}
+
+function craftShrine() {
+if (wood >= 50 && essence >= 7) {
+wood -= 50;
+essence -= 7;
+woodEl.textContent = wood;
+essenceEl.textContent = essence;
+forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.0x</p>";
 increaseGrowth(2.0);
 saveForest();
 }
