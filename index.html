@@ -1,81 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GrowATree.Io</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #e8f5e9;
-      padding: 20px;
-      transition: background 2s ease;
-    }
-<h4>Created By GITHUB</h4>
-    
-    #tree {
-      font-size: 100px;
-      text-align: center;
-      margin: 75px 0;
-    }
+<title>GrowATree.Io</title>
+<style>
+body {
+font-family: Arial;
+background: #e8f5e9;
+padding: 20px;
+transition: background 2s ease;
+}
+<h3>Created By GITHUB</h3>
 
-    .tree-grow {
-      transition: transform 5.0s ease, opacity 0.75s ease;
-      transform: scale(2.5);
-      opacity: 0.8;
-    }
+#tree {
+font-size: 100px;
+text-align: center;
+margin: 25px 0;
+}
 
-    #forest {
-      margin-top: 20px;
-      padding: 10px;
-      background: #c8e6c9;
-      min-height: 60px;
-    }
+.tree-grow {
+transition: transform 5.0s ease, opacity 0.75s ease;
+transform: scale(2.5);
+opacity: 0.8;
+}
 
-    .tree-icon {
-      font-size: 30px;
-      margin-right: 5px;
-    }
+#forest {
+margin-top: 20px;
+padding: 10px;
+background: #c8e6c9;
+min-height: 60px;
+}
 
-    #crafting button {
-      margin: 10px;
-      padding: 10px;
-    }
+.tree-icon {
+font-size: 30px;
+margin-right: 5px;
+}
 
-    #IronCountdown {
+#crafting button {
+margin: 10px;
+padding: 10px;
+}
+
+#IronCountdown {
+      color: #fg1100;
       color: #ff8600;
-      font-weight: bold;
-    }
+font-weight: bold;
+}
 
-    .Iron-notification {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(135deg, #ffd700, #ffed4e);
-      color: #333;
-      padding: 20px 40px;
-      border-radius: 10px;
-      font-size: 24px;
-      font-weight: bold;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      animation: fadeInOut 2s ease-in-out;
-      z-index: 1000;
-    }
+.Iron-notification {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: linear-gradient(135deg, #ffd700, #ffed4e);
+color: #333;
+padding: 20px 40px;
+border-radius: 10px;
+font-size: 24px;
+font-weight: bold;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+animation: fadeInOut 2s ease-in-out;
+z-index: 1000;
+}
 
-    @keyframes fadeInOut {
-      0% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(0.8);
-      }
-      50% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.8);
-      }
-    }
-  </style>
+@keyframes fadeInOut {
+0% {
+opacity: 1;
+transform: translate(-50%, -50%) scale(0.8);
+}
+50% {
+opacity: 1;
+transform: translate(-50%, -50%) scale(1);
+}
+100% {
+opacity: 0;
+transform: translate(-50%, -50%) scale(0.8);
+}
+}
+</style>
 </head>
 <body>
 
@@ -95,16 +96,16 @@
 <h3>Items</h3>
 <p>Wood: <span id="wood">0</span></p>
 <p>Iron: <span id="Iron">0</span></p>
-  <h3>I show speed</h3>
+<h3>I show speed</h3>
 <p>Growth Speed: <span id="growth">1.0x</span></p>
 
 <h3>Crafting</h3>
 <div id="crafting">
-  <button onclick="craftBench()">🪑 Bench (10 wood)</button>
-  <button onclick="craftLantern()">🏮 Lantern (25 wood)</button>
-  <button onclick="craftTreehouse()">🏡 Treehouse (40 wood, 2 Iron)</button>
-  <button onclick="craftShrine()">⛩️ Shrine (90 wood, 4 Iron)</button>
-  <button onclick="craftShrine()">⛩️ Shrine (50 wood, 8 Iron)</button>
+<button onclick="craftBench()">🪑 Bench (10 wood)</button>
+<button onclick="craftLantern()">🏮 Lantern (25 wood)</button>
+<button onclick="craftTreehouse()">🏡 Treehouse (40 wood, 2 Iron)</button>
+<button onclick="craftShrine()">⛩️ Shrine (90 wood, 4 Iron)</button>
+<button onclick="craftShrine()">⛩️ Shrine (50 wood, 8 Iron)</button>
 </div>
 
 <h3>Your Forest</h3>
