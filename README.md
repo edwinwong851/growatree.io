@@ -4,3 +4,5 @@ Objective: To make an app that is suitable for people with digital overload. Als
 
 
 Updates are frequent but minor, if you would like to suggest anything about my project or more about the backstory pls put a pull request.
+
+BTW Thank you for checking my app.
