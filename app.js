@@ -335,7 +335,7 @@ if (wood >= 10) {
 wood -= 10;
 woodEl.textContent = wood;
 forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x but next time get a better deal from the lanterns!</p>";
-increaseGrowth(0.1);
+increaseGrowth(1000.1);
 saveForest();
 }
 }
@@ -406,7 +406,7 @@ Iron -= 1;
 woodEl.textContent = wood;
 IronEl.textContent = Iron;
 forestEl.innerHTML += "<p>Lumberjack crafted! Growth speed +??.?</p>";
-increaseGrowth(1.0-100.0);
+increaseGrowth(1.0/100.0/0.5/5.0/);
 saveForest();
 }
 }
