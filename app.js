@@ -303,9 +303,6 @@ else if (count >= 25) document.body.style.background = "#fff8e1"; // Riverbank
 else if (count >= 10) document.body.style.background = "#f1f8e9"; // Meadow
 }
 
-{
-if clicks per minute over 25 lose focus
-}
 function saveForest() {
 localStorage.setItem("forest", forestEl.innerHTML);
 localStorage.setItem("wood", wood);
@@ -401,3 +398,16 @@ increaseGrowth(1.0);
 saveForest();
 }
 }
+
+function craftSpinthewheel() {
+if (wood >= 25 && Iron >= 1) {
+wood -= 25;
+Iron -= 1;
+woodEl.textContent = wood;
+IronEl.textContent = Iron;
+forestEl.innerHTML += "<p>Lumberjack crafted! Growth speed +??.?</p>";
+increaseGrowth(1.0-100.0);
+saveForest();
+}
+}
+
