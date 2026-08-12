@@ -303,6 +303,9 @@ else if (count >= 25) document.body.style.background = "#fff8e1"; // Riverbank
 else if (count >= 10) document.body.style.background = "#f1f8e9"; // Meadow
 }
 
+{
+if clicks per minute over 25 lose focus
+}
 function saveForest() {
 localStorage.setItem("forest", forestEl.innerHTML);
 localStorage.setItem("wood", wood);
