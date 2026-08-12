@@ -9,14 +9,18 @@ background: #e8f5e9;
 padding: 20px;
 transition: background 2s ease;
 }
+<h3>Created By GITHUB</h3>
 
 #tree {
+font-size: 100px;
       font-size: 100px;
 text-align: center;
 margin: 25px 0;
 }
 
 .tree-grow {
+transition: transform 5.0s ease, opacity 0.75s ease;
+transform: scale(2.5);
       transition: transform 3.0s ease, opacity 0.75s ease;
 transform: scale(1.2);
 opacity: 0.8;
@@ -31,15 +35,18 @@ min-height: 60px;
 
 .tree-icon {
 font-size: 30px;
-margin-right: 10px;
+margin-right: 5px;
 }
 
 #crafting button {
+margin: 10px;
 margin: 7.5px;
-padding: 12.5px;
+padding: 10px;
 }
 
 #IronCountdown {
+      color: #fg1100;
+      color: #ff8600;
 color: #ff9800;
 font-weight: bold;
 }
@@ -49,7 +56,7 @@ position: fixed;
 top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
-background: linear-gradient(135deg, #ffed11, #ffed4e);
+background: linear-gradient(135deg, #ffd700, #ffed4e);
 color: #333;
 padding: 20px 40px;
 border-radius: 10px;
@@ -68,10 +75,6 @@ transform: translate(-50%, -50%) scale(0.8);
 50% {
 opacity: 1;
 transform: translate(-50%, -50%) scale(1);
-}
-100% {
-opacity: 0;
-transform: translate(-50%, -50%) scale(0.8);
 }
 }
 </style>
@@ -104,8 +107,6 @@ transform: translate(-50%, -50%) scale(0.8);
 <button onclick="craftTreehouse()">🏡 Treehouse (40 wood, 2 Iron)</button>
 <button onclick="craftShrine()">⛩️ Shrine (90 wood, 4 Iron)</button>
 <button onclick="craftShrine()">⛩️ Shrine (50 wood, 8 Iron)</button>
-<button onclick="craftLumberjack()"> Lumberjack (50 wood, 0 Iron)</button>
-<button onclick="craftSpinthewheel()"> Spin the wheel (25 wood, 1 Iron)</button>
 </div>
 
 <h3>Your Forest</h3>
