@@ -334,7 +334,7 @@ function craftBench() {
 if (wood >= 10) {
 wood -= 10;
 woodEl.textContent = wood;
-forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x</p>";
+forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x but next time get a better deal from the lanterns!</p>";
 increaseGrowth(0.1);
 saveForest();
 }
@@ -356,8 +356,8 @@ wood -= 40;
 Iron -= 2;
 woodEl.textContent = wood;
 IronEl.textContent = Iron;
-forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +2.0x</p>";
-increaseGrowth(2.0);
+forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +1.2x</p>";
+increaseGrowth(1.2);
 saveForest();
 }
 }
