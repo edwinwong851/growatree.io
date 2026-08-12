@@ -387,14 +387,14 @@ saveForest();
 }
 
 
-function craftMiner() {
+function craftLumberjack() {
 if (wood >= 50 && Iron >= 0) {
 wood -= 50;
 Iron -= 0;
 woodEl.textContent = wood;
 IronEl.textContent = Iron;
-forestEl.innerHTML += "<p>⛏person Miner crafted! Iron growth speed +0.1x</p>";
-increaseironGrowth(0.1);
+forestEl.innerHTML += "<p>Lumberjack crafted! Growth speed +1.0x</p>";
+increaseGrowth(1.0);
 saveForest();
 }
 }
