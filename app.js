@@ -356,8 +356,8 @@ wood -= 40;
 Iron -= 2;
 woodEl.textContent = wood;
 IronEl.textContent = Iron;
-forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +0.75x</p>";
-increaseGrowth(0.75);
+forestEl.innerHTML += "<p>🏡 Treehouse crafted! Growth speed +1.0x</p>";
+increaseGrowth(1.0);
 saveForest();
 }
 }
