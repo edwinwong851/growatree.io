@@ -291,7 +291,7 @@ tree.textContent = species.emoji;
 forestEl.appendChild(tree);
 
 // Give 3 wood for planting a tree
-wood += 3;
+wood += 10;
 woodEl.textContent = Math.floor(wood);
 }
 
