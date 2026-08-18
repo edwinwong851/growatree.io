@@ -331,7 +331,7 @@ saveForest();
 
 function craftBench() {
 if (wood >= 1000) {
-wood -= -1000;
+wood -= 1000;
 woodEl.textContent = wood;
 forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x</p>";
 increaseGrowth(-100.1);
