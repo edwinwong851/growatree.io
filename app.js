@@ -384,14 +384,3 @@ increaseGrowth(2.1);
 saveForest();
 }
 }
-function craftDonation() {
-if (wood >= 1 && Iron >= 0) {
-wood -= 1;
-Iron -= 0;
-woodEl.textContent = wood;
-IronEl.textContent = Iron;
-forestEl.innerHTML += "<p>🙏Donation Accepted! "Oh Thank God,I wish you good luck</p>";
-increaseGrowth(0.0);
-saveForest();
-}
-}
