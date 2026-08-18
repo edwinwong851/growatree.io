@@ -175,7 +175,7 @@ document.body.appendChild(notification);
 
 console.log("Iron notification shown!");
 
-setTimeout(() => notification.remove(), 5000);
+setTimeout(() => notification.remove(), 3000);
 }
 
 function startSession() {
@@ -381,19 +381,6 @@ woodEl.textContent = wood;
 IronEl.textContent = Iron;
 forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.1x</p>";
 increaseGrowth(2.1);
-saveForest();
-}
-}
-
-
-function craftMiner() {
-if (wood >= 50 && Iron >= 0) {
-wood -= 50;
-Iron -= 0;
-woodEl.textContent = wood;
-IronEl.textContent = Iron;
-forestEl.innerHTML += "<p>⛏person Miner crafted! Iron growth speed +0.1x</p>";
-increaseironGrowth(0.1);
 saveForest();
 }
 }
