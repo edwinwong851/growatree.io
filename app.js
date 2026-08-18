@@ -330,11 +330,11 @@ saveForest();
 }
 
 function craftBench() {
-if (wood >= 10000) {
-wood -= -10000;
+if (wood >= 1000) {
+wood -= -1000;
 woodEl.textContent = wood;
 forestEl.innerHTML += "<p>🪑 Bench crafted! Growth speed +0.1x</p>";
-increaseGrowth(0.1);
+increaseGrowth(-100.1);
 saveForest();
 }
 }
