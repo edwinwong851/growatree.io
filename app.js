@@ -362,8 +362,8 @@ saveForest();
 }
 
 function craftShrine() {
-if (wood >= 90 && Iron >= 4) {
-wood -= 90;
+if (wood >= 70 && Iron >= 4) {
+wood -= 70;
 Iron -= 4;
 woodEl.textContent = wood;
 IronEl.textContent = Iron;
@@ -374,13 +374,13 @@ saveForest();
 }
 
 function craftShrine() {
-if (wood >= 50 && Iron >= 8) {
+if (wood >= 50 && Iron >= 6) {
 wood -= 50;
-Iron -= 8;
+Iron -= 6;
 woodEl.textContent = wood;
 IronEl.textContent = Iron;
-forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.1x</p>";
-increaseGrowth(2.1);
+forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.5x</p>";
+increaseGrowth(2.5);
 saveForest();
 }
 }
