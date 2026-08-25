@@ -361,7 +361,7 @@ saveForest();
 }
 }
 
-function craftShrine() {
+function craftShrine1() {
 if (wood >= 70 && Iron >= 4) {
 wood -= 70;
 Iron -= 4;
@@ -373,7 +373,7 @@ saveForest();
 }
 }
 
-function craftShrine() {
+function craftShrine2() {
 if (wood >= 50 && Iron >= 6) {
 wood -= 50;
 Iron -= 6;
