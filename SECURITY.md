@@ -5,7 +5,7 @@
 This is what versions have privacy
 | Version | Supported          |
 | ------- | ------------------ |
-| < 2.0   | :#:                |
+| < 2.0   | :YES:                |
 
 ## Reporting a Vulnerability
 
