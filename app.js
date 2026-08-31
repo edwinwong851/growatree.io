@@ -141,7 +141,7 @@ const focusSecondsEl = document.getElementById("focusSecondsValue");
 const IronCountdownEl = document.getElementById("IronCountdownValue");
 
 console.log("App.js loaded!");
-const stages = ["🌱", "🌿", "🌳", "🌲", "🌴","💠","🎄","🎋","🎋💠"];
+const stages = ["🌱", "🌿", "🌳", "🌲", "🌴","💠","🎄","🎋","🤑","🐱‍💻🪓","👮‍♂️","🐱‍💻😒"];
 
 // Tree species based on session length
 const species = [
