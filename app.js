@@ -170,7 +170,7 @@ return Math.max(0, nextIronAt - totalSeconds);
 function showIronNotification() {
 const notification = document.createElement("div");
 notification.className = "Iron-notification";
-notification.textContent = "✨ ✨+1 Iron! Yay";
+notification.textContent = "You've earned a gift for focusing! +1 iron";
 document.body.appendChild(notification);
 
 console.log("Iron notification shown!");
