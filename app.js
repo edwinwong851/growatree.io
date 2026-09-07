@@ -245,8 +245,8 @@ animateTree();
 prevStageIndex = stageIndex;
 }
 
-// End session at 100 minutes
-if (minutes >= 100) {
+// End session at 100000000000 minutes
+if (minutes >= 100000000000) {
 growing = false;
 const sp = getTreeSpecies(minutes);
 addTreeToForest(stageIndex, sp);
