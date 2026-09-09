@@ -367,8 +367,8 @@ wood -= 70;
 Iron -= 4;
 woodEl.textContent = wood;
 IronEl.textContent = Iron;
-forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.5x</p>";
-increaseGrowth(2.5);
+forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +3.5x</p>";
+increaseGrowth(3.5);
 saveForest();
 }
 }
@@ -379,8 +379,8 @@ wood -= 50;
 Iron -= 6;
 woodEl.textContent = wood;
 IronEl.textContent = Iron;
-forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +2.5x</p>";
-increaseGrowth(2.5);
+forestEl.innerHTML += "<p>⛩️ Shrine crafted! Growth speed +3.5x</p>";
+increaseGrowth(3.5);
 saveForest();
 }
 }
